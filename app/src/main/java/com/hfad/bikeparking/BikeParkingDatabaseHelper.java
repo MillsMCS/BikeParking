@@ -14,9 +14,9 @@ public class BikeParkingDatabaseHelper extends SQLiteOpenHelper {
     }
 
     // Begin helper functions for the database
-    private static void insertRack(SQLiteDatabase db, String name,
-                                   long latitude, long longitude,
-                                   int photoID, int addedBy, int notes) {
+    public static void insertRack(SQLiteDatabase db, String name,
+                                  long latitude, long longitude,
+                                  int photoID, int addedBy, int notes) {
         ContentValues rackValues = new ContentValues();
         rackValues.put("NAME", name);
         rackValues.put("LATITUDE", latitude);
@@ -24,6 +24,32 @@ public class BikeParkingDatabaseHelper extends SQLiteOpenHelper {
         rackValues.put("PHOTO", photoID);
         rackValues.put("ADDED_BY", addedBy);
         rackValues.put("NOTES", notes);
+        db.insert("BIKE_RACK", null, rackValues);
+    }
+
+    public static void insertNote(SQLiteDatabase db, int rackID, int userID,
+                                  String timestamp, String note) {
+        ContentValues notesValues = new ContentValues();
+        notesValues.put("RACK_ID", rackID);
+        notesValues.put("USER_ID", userID);
+        notesValues.put("TIME", timestamp);
+        notesValues.put("NOTE", note);
+        db.insert("NOTES", null, notesValues);
+    }
+
+    /* Inserts a photo into the database.
+     *
+     *
+     */
+    public static void insertPhoto(SQLiteDatabase db, int rackID, int userID, String timestamp,
+                                   byte[] photo, int rating) {
+        ContentValues photoValues = new ContentValues();
+        photoValues.put("RACK_ID", rackID);
+        photoValues.put("USER_ID", userID);
+        photoValues.put("TIME", timestamp);
+        photoValues.put("PHOTO", photo);
+        photoValues.put("RATING", rating);
+        db.insert("PHOTO", null, photoValues);
     }
 
     /**
