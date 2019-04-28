@@ -26,10 +26,4 @@
         android:layout_height="wrap_content"
         android:text="Hello World!" />
 
-    <!--<item android:id= "@+id/action_share"-->
-        <!--android:title="@string/action_share"-->
-        <!--android:orderInCategory="1"-->
-        <!--app:showAsAction="ifRoom"-->
-        <!--app:actionProviderClass="android.support.v7.widget.shareActionProvider" />-->
-
 </LinearLayout>
