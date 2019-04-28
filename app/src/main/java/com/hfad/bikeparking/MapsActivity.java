@@ -1,13 +1,20 @@
 package com.hfad.bikeparking;
 
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.support.v7.widget.ShareActionProvider;
 import android.support.v4.view.MenuItemCompat;
-
+import android.widget.TextView;
+import android.widget.Toast;
 
 
 public class MapsActivity extends AppCompatActivity {
@@ -37,7 +44,38 @@ public class MapsActivity extends AppCompatActivity {
         shareActionProvider.setShareIntent(intent);
     }
 
+    /*
+    SQLiteOpenHelper bikeRackDatabaseHelper = new BikeParkingDatabaseHelper(this);
+    try{
+        SQLiteDatabase db = bikeRackDatabaseHelper.getReadableDatabase();
+        Cursor cursor = db.query("BIKE_RACK",
+                new String[]{"NAME", "NOTES",
+                "IMAGE_ID"},
+                null, null, null, null, null);
+        if(cursor.moveToFirst()){
+            String nameText = cursor.getString(0);
+            String notesText = cursor.getString(1);
+            int photoId = cursor.getInt(2);
 
+        /*
+        TextView name = findViewById(R.id.name);
+        name.setText(nameText);
 
+        TextView notes = findViewById(R.id.notes);
+        notes.setText(notesText);
 
+        ImageView photo = findViewById(R.id.photo);
+        photo.setImageResource(photoId);
+        photo.setContentDescription(nameText);
+        ///
+
+        } else {
+            Log.d("MapsActivity", "No record was found");
+        }
+    } catch(SQLiteException e){
+        Toast toast = Toast.makeText(this,
+                "Database unavailable",
+                Toast.LENGTH_SHORT);
+        toast.show();
+    }//*/
 }
