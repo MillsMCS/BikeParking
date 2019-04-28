@@ -21,11 +21,6 @@
         android:entries="@array/building_names"
         />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!" />
-
     <!--<item android:id= "@+id/action_share"-->
         <!--android:title="@string/action_share"-->
         <!--android:orderInCategory="1"-->
