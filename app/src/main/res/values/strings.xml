@@ -1,8 +1,9 @@
 <resources>
-    <string name="app_name">BikeParking</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="app_name">Bike Rack</string>
+    <string name="new_note">Add notes about this bike rack</string>
+    <string name="insert_photo">Add a photo</string>
+    <string name="image_capture">Take a photo</string>
+    <string name="image_upload">Upload a photo</string>
     <string name="title_activity_maps">Bike App</string>
     <string-array name="building_names">
         <item>NSB</item>
