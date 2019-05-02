@@ -27,6 +27,7 @@ public class MapsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_maps);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolBar);
         setSupportActionBar(toolbar);
+        //getBikeRack();
     }
 
 //    @Override
