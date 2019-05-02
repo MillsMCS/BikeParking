@@ -1,4 +1,4 @@
-package com.hfad.bikeparking;
+package edu.mills.cs115.bikeparking;
 
 import android.content.Intent;
 import android.database.Cursor;
@@ -10,11 +10,10 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.widget.ImageView;
-import android.widget.Spinner;
 import android.support.v7.widget.ShareActionProvider;
-import android.support.v4.view.MenuItemCompat;
 import android.widget.TextView;
 import android.widget.Toast;
+import edu.mills.cs115.bikeparking.R;
 
 
 public class MapsActivity extends AppCompatActivity {
