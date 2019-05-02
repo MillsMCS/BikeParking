@@ -37,14 +37,12 @@ public class NewPhotoFragment extends Fragment {
         }
     }
 
-}
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         // Inflate the layout for this fragment
-        View layout = inflater.inflate(R.layout.fragment_new_photo, container, false);
+        layout = inflater.inflate(R.layout.fragment_new_photo, container, false);
 
         Button b = (Button) layout.findViewById(R.id.upload_photo);
         b.setOnClickListener(new View.OnClickListener() {
@@ -54,8 +52,6 @@ public class NewPhotoFragment extends Fragment {
             }
         });
 
-
         return layout;
     }
-
 }
