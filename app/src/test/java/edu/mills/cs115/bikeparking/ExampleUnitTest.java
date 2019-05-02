@@ -1,4 +1,4 @@
-package com.hfad.bikeparking;
+package edu.mills.cs115.bikeparking;
 
 import org.junit.Test;
 
