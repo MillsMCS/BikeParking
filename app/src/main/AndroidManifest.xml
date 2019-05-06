@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="edu.mills.cs115.bikeparking">
+    package="com.hfad.bikeparking">
 
     <!--
          The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
@@ -30,9 +30,19 @@
             android:value="@string/google_maps_key" />
 
         <activity
-            android:name=".MapsTestActivity"
-            android:label="@string/title_activity_maps_test"></activity>
-        <activity android:name=".TestActivity"></activity>
+            android:name=".MapsActivity2"
+            android:label="@string/title_activity_maps2">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <meta-data
+            android:name="com.google.android.actions"
+            android:resource="@menu/menu_main" />
+
         <activity
             android:name=".MapsActivity"
             android:label="@string/title_activity_maps">
@@ -43,6 +53,10 @@
             </intent-filter>
         </activity>
         <activity android:name=".AddRackActivity" />
+
+        <meta-data
+            android:name="com.google.android.geo.AIzaSyDuw4fcEVFSD3jDpJfyHER-tfHUSYUSZPU"
+            android:value="AIzaSyDuw4fcEVFSD3jDpJfyHER-tfHUSYUSZPU" />
     </application>
 
 </manifest>
