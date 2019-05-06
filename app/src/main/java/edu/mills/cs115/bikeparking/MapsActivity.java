@@ -18,6 +18,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.hfad.bikeparking.R;
+
 /**
  * The top-level activity for Bike Parking. The accompanying view
  * enables users to display {@link MapsActivity} and {@link RackFragment}.

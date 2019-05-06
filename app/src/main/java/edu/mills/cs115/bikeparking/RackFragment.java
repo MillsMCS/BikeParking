@@ -12,6 +12,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.hfad.bikeparking.R;
+
 /**
  *Enables the user to view the details of
  * a bike rack.
