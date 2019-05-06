@@ -1,4 +1,9 @@
 <resources>
+    <string name="app_name">BikeParking</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_maps">Bike Rack</string>
     <string name="app_name">Bike Rack</string>
     <string name="new_note">Add notes about this bike rack</string>
     <string name="insert_photo">Upload photo</string>
@@ -15,6 +20,7 @@
         <item>Orchard Meadow Hall</item>
     </string-array>
     <string name="action_share">Share</string>
+    <string name="title_activity_maps2">Map</string>
     <string name="rack_name">Bike Rack</string>
     <string name="hello_blank_fragment">Hello!</string>
 </resources>
