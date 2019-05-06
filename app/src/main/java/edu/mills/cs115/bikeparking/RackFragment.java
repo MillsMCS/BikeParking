@@ -11,8 +11,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import edu.mills.cs115.bikeparking.R;
-
 /**
  *
  */
