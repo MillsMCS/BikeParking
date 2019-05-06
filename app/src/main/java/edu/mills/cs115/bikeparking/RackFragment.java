@@ -12,8 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import edu.mills.cs115.bikeparking.R;
-
 /**
  *Enables the user to view the details of
  * a bike rack.
