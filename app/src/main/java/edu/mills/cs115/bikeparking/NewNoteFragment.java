@@ -1,4 +1,4 @@
-package com.hfad.bikeparking;
+package edu.mills.cs115.bikeparking;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;

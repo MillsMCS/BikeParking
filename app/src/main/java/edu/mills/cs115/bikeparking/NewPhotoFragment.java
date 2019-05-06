@@ -1,4 +1,4 @@
-package com.hfad.bikeparking;
+package edu.mills.cs115.bikeparking;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -9,7 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
-
 
 public class NewPhotoFragment extends Fragment {
     private static final int CAMERA_REQUEST = 1888;

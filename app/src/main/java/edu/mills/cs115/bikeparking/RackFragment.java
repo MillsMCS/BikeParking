@@ -1,4 +1,4 @@
-package com.hfad.bikeparking;
+package edu.mills.cs115.bikeparking;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -10,7 +10,6 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.SimpleCursorAdapter;
 
 /**
  *

@@ -1,4 +1,4 @@
-package com.hfad.bikeparking;
+package edu.mills.cs115.bikeparking;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 public class BikeParkingDatabaseHelper extends SQLiteOpenHelper {
-    private static final String DB_NAME = "bikeparking";
+    private static final String DB_NAME = "edu.mills.cs115.bikeparking";
     private static final int DB_VERSION = 0;
 
     BikeParkingDatabaseHelper(Context context) {
