@@ -1,13 +1,24 @@
 package edu.mills.cs115.bikeparking;
 
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
+import android.database.sqlite.SQLiteOpenHelper;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.ShareActionProvider;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
+
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -15,6 +26,11 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+
+/**
+ * The top-level activity for Bike Parking. The accompanying view
+ * enables users to display {@link MapsActivity2} and {@link RackFragment}.
+ */
 public class MapsActivity2 extends AppCompatActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
@@ -30,6 +46,7 @@ public class MapsActivity2 extends AppCompatActivity implements OnMapReadyCallba
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+        getBikeRack();
     }
 
 
@@ -48,6 +65,7 @@ public class MapsActivity2 extends AppCompatActivity implements OnMapReadyCallba
         intent.putExtra(Intent.EXTRA_TEXT, text);
         shareActionProvider.setShareIntent(intent);
     }
+
     /**
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
@@ -72,6 +90,42 @@ public class MapsActivity2 extends AppCompatActivity implements OnMapReadyCallba
         mMap.addMarker(new MarkerOptions().position(WarrenOlney));
 
         float zoomLevel = 15.7f; //This goes up to 21
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(MillsCollege,zoomLevel));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(MillsCollege, zoomLevel));
+    }
+
+    private void getBikeRack() {
+        SQLiteOpenHelper bikeRackDatabaseHelper = new BikeParkingDatabaseHelper(this);
+        try {
+            SQLiteDatabase db = bikeRackDatabaseHelper.getReadableDatabase();
+            Cursor cursor = db.query("BIKE_RACK",
+                    new String[]{"NAME", "NOTES",
+                            "IMAGE_ID"},
+                    null, null, null, null, null);
+            if (cursor.moveToFirst()) {
+                String nameText = cursor.getString(0);
+                Boolean notes = false;
+                if (cursor.getInt(1) == 1) {
+                    notes = true;
+                }
+                int photoId = cursor.getInt(2);
+
+                ///*
+                TextView name = findViewById(R.id.name);
+                name.setText(nameText);
+
+                ImageView photo = findViewById(R.id.photo);
+                photo.setImageResource(photoId);
+                photo.setContentDescription(nameText);
+                ///
+
+            } else {
+                Log.d("MapsActivity2", "No record was found");
+            }
+        } catch (SQLiteException e) {
+            Toast toast = Toast.makeText(this,
+                    "Database unavailable",
+                    Toast.LENGTH_SHORT);
+            toast.show();
+        }
     }
 }
