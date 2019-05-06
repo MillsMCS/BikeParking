@@ -5,16 +5,23 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.ShareActionProvider;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
+/**
+ * The top-level activity for Bike Parking. The accompanying view
+ * enables users to display {@link MapsActivity} and {@link RackFragment}.
+ */
 public class MapsActivity extends AppCompatActivity {
 
     private ShareActionProvider shareActionProvider;
@@ -25,7 +32,7 @@ public class MapsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_maps);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolBar);
         setSupportActionBar(toolbar);
-        //getBikeRack();
+        getBikeRack();
     }
 
 //    @Override
@@ -41,6 +48,14 @@ public class MapsActivity extends AppCompatActivity {
         intent.setType("text/plain");
         intent.putExtra(Intent.EXTRA_TEXT, text);
         shareActionProvider.setShareIntent(intent);
+    }
+
+    private void newRack(View view){
+        Fragment bikeRack = new RackFragment();
+        FragmentTransaction rackTransact = getSupportFragmentManager().beginTransaction();
+        rackTransact.replace(R.id.name, bikeRack);
+        rackTransact.addToBackStack(null);
+        rackTransact.commit();
     }
 
     ///*

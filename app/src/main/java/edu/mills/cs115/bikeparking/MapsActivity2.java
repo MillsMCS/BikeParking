@@ -1,12 +1,11 @@
-package com.hfad.bikeparking;
+package edu.mills.cs115.bikeparking;
 
 import android.content.Intent;
-import android.support.v4.app.FragmentActivity;
+import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.ShareActionProvider;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -16,8 +15,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-
-public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class MapsActivity2 extends AppCompatActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
     private ShareActionProvider shareActionProvider;
@@ -25,12 +23,15 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_maps);
+        setContentView(R.layout.activity_maps2);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolBar);
         setSupportActionBar(toolbar);
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -47,7 +48,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         intent.putExtra(Intent.EXTRA_TEXT, text);
         shareActionProvider.setShareIntent(intent);
     }
-
     /**
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
@@ -60,10 +60,18 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        LatLng Court_Stevenson = new LatLng(37.781292, -122.186266);
+        LatLng Court_Stevenson2 = new LatLng(37.7814257, -122.1863674);
+        LatLng Underwood_BuildingA = new LatLng(37.7810884, -122.185789);
+        LatLng WarrenOlney = new LatLng(37.782181, -122.182206);
+        LatLng MillsCollege = new LatLng(37.781004, -122.182827);
 
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        mMap.addMarker(new MarkerOptions().position(Court_Stevenson));
+        mMap.addMarker(new MarkerOptions().position(Court_Stevenson2));
+        mMap.addMarker(new MarkerOptions().position(Underwood_BuildingA));
+        mMap.addMarker(new MarkerOptions().position(WarrenOlney));
+
+        float zoomLevel = 15.7f; //This goes up to 21
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(MillsCollege,zoomLevel));
     }
 }
