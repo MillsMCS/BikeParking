@@ -18,4 +18,5 @@
     <string name="action_share">Share</string>
     <string name="rack_name">Bike Rack</string>
     <string name="hello_blank_fragment">Hello!</string>
+    <string name="rack_button">Create Bike Rack</string>
 </resources>

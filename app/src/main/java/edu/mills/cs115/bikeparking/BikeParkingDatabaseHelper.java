@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class BikeParkingDatabaseHelper extends SQLiteOpenHelper {
     private static final String DB_NAME = "edu.mills.cs115.bikeparking";
-    private static final int DB_VERSION = 0;
+    private static final int DB_VERSION = 1;
 
     BikeParkingDatabaseHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);

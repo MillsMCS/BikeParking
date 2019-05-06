@@ -10,17 +10,22 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import edu.mills.cs115.bikeparking.R;
 
 /**
- *
+ *Enables the user to view the details of
+ * a bike rack.
  */
 public class RackFragment extends Fragment {
 
     private static SQLiteDatabase db;
     private static Cursor cursor;
 
+    /**
+     * Creates a new instance of RackFragment.
+     */
     public RackFragment() {
         // Required empty public constructor
     }
@@ -56,6 +61,11 @@ public class RackFragment extends Fragment {
                 return true;
 
             } catch (SQLiteException e) {
+                /*
+                Toast toast = Toast.makeText(this,
+                        "Database unavailable",
+                        Toast.LENGTH_SHORT);
+                toast.show();//*/
                 return false;
             }
         }
