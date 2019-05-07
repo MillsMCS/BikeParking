@@ -5,6 +5,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -21,6 +23,8 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -44,7 +48,7 @@ public class MapsActivity2 extends AppCompatActivity implements OnMapReadyCallba
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-        getBikeRack();
+        //getBikeRack();
     }
 
 
@@ -82,10 +86,23 @@ public class MapsActivity2 extends AppCompatActivity implements OnMapReadyCallba
         LatLng WarrenOlney = new LatLng(37.782181, -122.182206);
         LatLng MillsCollege = new LatLng(37.781004, -122.182827);
 
-        mMap.addMarker(new MarkerOptions().position(Court_Stevenson));
-        mMap.addMarker(new MarkerOptions().position(Court_Stevenson2));
-        mMap.addMarker(new MarkerOptions().position(Underwood_BuildingA));
-        mMap.addMarker(new MarkerOptions().position(WarrenOlney));
+        BitmapDescriptor bdf = BitmapDescriptorFactory.fromResource(R.drawable.bikecon);
+        mMap.addMarker(new MarkerOptions()
+                .position(Court_Stevenson)
+                .icon(bdf)
+        );
+        mMap.addMarker(new MarkerOptions()
+                .position(Court_Stevenson2)
+                .icon(bdf)
+        );
+        mMap.addMarker(new MarkerOptions()
+                .position(Underwood_BuildingA)
+                .icon(bdf)
+        );
+        mMap.addMarker(new MarkerOptions()
+                .position(WarrenOlney)
+                .icon(bdf)
+        );
 
         float zoomLevel = 15.7f; //This goes up to 21
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(MillsCollege, zoomLevel));
