@@ -53,7 +53,7 @@ public class MapsActivity extends AppCompatActivity implements
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-        getBikeRack();
+        //getBikeRack();
     }
 
 
@@ -196,10 +196,10 @@ public class MapsActivity extends AppCompatActivity implements
             }
             cursor.close();
         } catch (SQLiteException e) {
-            Toast toast = Toast.makeText(this,
+            /*Toast toast = Toast.makeText(this,
                     "Database unavailable",
                     Toast.LENGTH_SHORT);
-            toast.show();
+            toast.show();*/
         }
     }
 }

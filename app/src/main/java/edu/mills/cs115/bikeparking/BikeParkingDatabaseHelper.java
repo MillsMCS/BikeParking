@@ -5,6 +5,9 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+/**
+ * A modified SQLiteOpenHelper used to manage a database of bike racks.
+ */
 public class BikeParkingDatabaseHelper extends SQLiteOpenHelper {
     private static final String DB_NAME = "edu.mills.cs115.bikeparking";
     private static final int DB_VERSION = 1;
@@ -14,6 +17,17 @@ public class BikeParkingDatabaseHelper extends SQLiteOpenHelper {
     }
 
     // Begin helper functions for the database
+
+    /**
+     * Inserts a new bike rack into the database.
+     * @param db the database
+     * @param name location name of the bike rack
+     * @param latitude latitude of the bike rack
+     * @param longitude longitude of the bike rack
+     * @param photoID id of a photo connected to the bike rack
+     * @param addedBy id of the user who added the bike rack
+     * @param notes notes that are connected to the bike rack
+     */
     public static void insertRack(SQLiteDatabase db, String name,
                                   long latitude, long longitude,
                                   int photoID, int addedBy, int notes) {
@@ -27,6 +41,14 @@ public class BikeParkingDatabaseHelper extends SQLiteOpenHelper {
         db.insert("BIKE_RACK", null, rackValues);
     }
 
+    /**
+     * Inserts a note into the database.
+     * @param db the database
+     * @param rackID id of the bike rack that the note is connected to
+     * @param userID id of the user who inserted the note
+     * @param timestamp time that the note was inserted
+     * @param note note to be inserted
+     */
     public static void insertNote(SQLiteDatabase db, int rackID, int userID,
                                   String timestamp, String note) {
         ContentValues notesValues = new ContentValues();
@@ -37,9 +59,14 @@ public class BikeParkingDatabaseHelper extends SQLiteOpenHelper {
         db.insert("NOTES", null, notesValues);
     }
 
-    /* Inserts a photo into the database.
-     *
-     *
+    /**
+     * Inserts a photo into the database.
+     * @param db the database
+     * @param rackID id of the bike rack that the photo is connected to
+     * @param userID id of the user who inserted the photo
+     * @param timestamp time that the photo was inserted
+     * @param photo photo to be inserted
+     * @param rating user-decided rating of the bike rack
      */
     public static void insertPhoto(SQLiteDatabase db, int rackID, int userID, String timestamp,
                                    byte[] photo, int rating) {

@@ -6,6 +6,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+/**
+ *Enables the user to add a new note to a bike rack.
+ */
 public class NewNoteFragment extends Fragment {
 
     @Override
