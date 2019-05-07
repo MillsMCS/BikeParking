@@ -10,10 +10,16 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 
+/**
+ * Enables a user to add a new photo to a bike rack.
+ */
 public class NewPhotoFragment extends Fragment {
     private static final int CAMERA_REQUEST = 1888;
     private View layout;
 
+    /**
+     * Creates a new PhotoFragment.
+     */
     public NewPhotoFragment() {
         // Required empty public constructor
     }
@@ -24,6 +30,12 @@ public class NewPhotoFragment extends Fragment {
 
     }
 
+    /**
+     *
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
     // https://stackoverflow.com/questions/9941637/android-how-to-save-camera-images-in-database-and-display-another-activity-in-li#
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
