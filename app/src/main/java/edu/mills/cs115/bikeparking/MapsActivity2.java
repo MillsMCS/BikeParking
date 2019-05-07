@@ -1,5 +1,6 @@
 package edu.mills.cs115.bikeparking;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -17,6 +18,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -76,19 +80,41 @@ public class MapsActivity2 extends AppCompatActivity implements OnMapReadyCallba
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        LatLng Court_Stevenson = new LatLng(37.781292, -122.186266);
-        LatLng Court_Stevenson2 = new LatLng(37.7814257, -122.1863674);
-        LatLng Underwood_BuildingA = new LatLng(37.7810884, -122.185789);
-        LatLng WarrenOlney = new LatLng(37.782181, -122.182206);
-        LatLng MillsCollege = new LatLng(37.781004, -122.182827);
 
-        mMap.addMarker(new MarkerOptions().position(Court_Stevenson));
-        mMap.addMarker(new MarkerOptions().position(Court_Stevenson2));
-        mMap.addMarker(new MarkerOptions().position(Underwood_BuildingA));
-        mMap.addMarker(new MarkerOptions().position(WarrenOlney));
+        if(servicesOK()) {
+            try {
+                LatLng Court_Stevenson = new LatLng(37.781292, -122.186266);
+                LatLng Court_Stevenson2 = new LatLng(37.7814257, -122.1863674);
+                LatLng Underwood_BuildingA = new LatLng(37.7810884, -122.185789);
+                LatLng WarrenOlney = new LatLng(37.782181, -122.182206);
+                LatLng MillsCollege = new LatLng(37.781004, -122.182827);
 
-        float zoomLevel = 15.7f; //This goes up to 21
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(MillsCollege, zoomLevel));
+                mMap.addMarker(new MarkerOptions().position(Court_Stevenson));
+                mMap.addMarker(new MarkerOptions().position(Court_Stevenson2));
+                mMap.addMarker(new MarkerOptions().position(Underwood_BuildingA));
+                mMap.addMarker(new MarkerOptions().position(WarrenOlney));
+
+                float zoomLevel = 15.7f; //This goes up to 21
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(MillsCollege, zoomLevel));
+            } catch (Exception e) {
+                Toast toast = Toast.makeText(this,
+                        "Google Play Services is not avaliable for this device",
+                        Toast.LENGTH_SHORT);
+                toast.show() ;
+            }
+        }
+
+    }
+
+    public boolean servicesOK() {
+        GoogleApiAvailability googleApiAvailability = GoogleApiAvailability.getInstance();
+        int result = googleApiAvailability.isGooglePlayServicesAvailable(this);
+        if (result == ConnectionResult.SUCCESS) {
+            return true;
+        } else {
+            Toast.makeText(this, "Cannot connect to Google Play services", Toast.LENGTH_LONG).show();
+        }
+        return false;
     }
 
     private void getBikeRack() {

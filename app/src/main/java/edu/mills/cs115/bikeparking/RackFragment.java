@@ -12,8 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
-
-import com.hfad.bikeparking.R;
+import edu.mills.cs115.bikeparking.R;
 
 /**
  *Enables the user to view the details of
