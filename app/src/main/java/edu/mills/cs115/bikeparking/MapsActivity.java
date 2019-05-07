@@ -18,6 +18,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
@@ -51,7 +53,7 @@ public class MapsActivity extends AppCompatActivity implements
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-        //getBikeRack();
+        getBikeRack();
     }
 
 
@@ -83,13 +85,16 @@ public class MapsActivity extends AppCompatActivity implements
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        LatLng Court_Stevenson = new LatLng(37.781292, -122.186266);
-        LatLng Court_Stevenson2 = new LatLng(37.7814257, -122.1863674);
-        LatLng Underwood_BuildingA = new LatLng(37.7810884, -122.185789);
-        LatLng WarrenOlney = new LatLng(37.782181, -122.182206);
-        LatLng MillsCollege = new LatLng(37.781004, -122.182827);
 
-        BitmapDescriptor bdf = BitmapDescriptorFactory.fromResource(R.drawable.bikecon);
+        if (servicesOK()) {
+            try {
+                LatLng Court_Stevenson = new LatLng(37.781292, -122.186266);
+                LatLng Court_Stevenson2 = new LatLng(37.7814257, -122.1863674);
+                LatLng Underwood_BuildingA = new LatLng(37.7810884, -122.185789);
+                LatLng WarrenOlney = new LatLng(37.782181, -122.182206);
+                LatLng MillsCollege = new LatLng(37.781004, -122.182827);
+
+                BitmapDescriptor bdf = BitmapDescriptorFactory.fromResource(R.drawable.bikecon);
         mMap.addMarker(new MarkerOptions()
                 .position(Court_Stevenson)
                 .icon(bdf)
@@ -107,21 +112,30 @@ public class MapsActivity extends AppCompatActivity implements
                 .icon(bdf)
         );
 
-        float zoomLevel = 15.7f; //This goes up to 21
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(MillsCollege, zoomLevel));
-        mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
-            @Override
-            public View getInfoWindow(Marker marker) {
-                return null;
-            }
+                float zoomLevel = 15.7f; //This goes up to 21
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(MillsCollege, zoomLevel));
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(MillsCollege, zoomLevel));
+                mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+                    @Override
+                    public View getInfoWindow(Marker marker) {
+                        return null;
+                    }
 
-            @Override
-            public View getInfoContents(Marker marker) {
-                View v = getLayoutInflater().inflate(R.layout.fragment_rack, null);
-                // Other information to set the data goes here
-                return v;
+                    @Override
+                    public View getInfoContents(Marker marker) {
+                        View v = getLayoutInflater().inflate(R.layout.fragment_rack, null);
+                        // Other information to set the data goes here
+                        return v;
+                    }
+                });
+
+            } catch (Exception e) {
+                Toast toast = Toast.makeText(this,
+                        "Google Play Services is not installed for this device",
+                        Toast.LENGTH_SHORT);
+                toast.show();
             }
-        });
+        }
     }
 
     /**
@@ -136,6 +150,18 @@ public class MapsActivity extends AppCompatActivity implements
         // Check if a click count was set, then display the click count.
         if (clickCount != null) {
             marker.showInfoWindow();
+        }
+        return false;
+    }
+
+
+    public boolean servicesOK() {
+        GoogleApiAvailability googleApiAvailability = GoogleApiAvailability.getInstance();
+        int result = googleApiAvailability.isGooglePlayServicesAvailable(this);
+        if (result == ConnectionResult.SUCCESS) {
+            return true;
+        } else {
+            Toast.makeText(this, "Cannot connect to Google Play services", Toast.LENGTH_LONG).show();
         }
         return false;
     }
