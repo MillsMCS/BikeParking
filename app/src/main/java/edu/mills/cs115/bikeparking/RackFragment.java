@@ -12,17 +12,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
-import edu.mills.cs115.bikeparking.R;
 
 /**
- *Enables the user to view the details of
+ * Enables the user to view the details of
  * a bike rack.
  */
 public class RackFragment extends Fragment {
 
     private static SQLiteDatabase db;
     private static Cursor cursor;
-    private static View layout;
     private static Activity activity;
 
     /**
@@ -44,28 +42,28 @@ public class RackFragment extends Fragment {
     private static class fetchBikeRack extends AsyncTask<Object, Void, Boolean> {
 
         @Override
-                protected void onPreExecute(){
+        protected void onPreExecute() {
 
         }
 
         @Override
-                protected Boolean doInBackground(Object... params) {
+        protected Boolean doInBackground(Object... params) {
             SQLiteOpenHelper bikeRackDatabaseHelper = (SQLiteOpenHelper) params[1];
 
-            try{
+            try {
 
                 db = bikeRackDatabaseHelper.getReadableDatabase();
                 cursor = db.query("BIKE_RACK",
-                        new String[] {"NAME"},
+                        new String[]{"NAME"},
                         null, null, null, null, null);
                 /*
                 SimpleCursorAdapter cursorAdapter = new SimpleCursorAdapter(MapsActivity2.this,
                         android.R.layout.simple_gallery_item
-                );//*/
+                );*/
                 return true;
 
             } catch (SQLiteException e) {
-                Toast toast = (Toast) Toast.makeText(activity,
+                Toast toast = Toast.makeText(activity,
                         "Database unavailable",
                         Toast.LENGTH_SHORT);
                 toast.show();

@@ -1,6 +1,5 @@
 package edu.mills.cs115.bikeparking;
 
-import android.app.Dialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -14,26 +13,32 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.common.GoogleApiAvailability;
-import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 
 /**
  * The top-level activity for Bike Parking. The accompanying view
- * enables users to display {@link MapsActivity2} and {@link RackFragment}.
+ * enables users to display {@link MapsActivity} and {@link RackFragment}.
  */
-public class MapsActivity2 extends AppCompatActivity implements OnMapReadyCallback {
+public class MapsActivity extends AppCompatActivity implements
+        OnMarkerClickListener,
+        OnMapReadyCallback {
 
     private GoogleMap mMap;
     private ShareActionProvider shareActionProvider;
@@ -42,7 +47,7 @@ public class MapsActivity2 extends AppCompatActivity implements OnMapReadyCallba
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps2);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolBar);
+        Toolbar toolbar = findViewById(R.id.toolBar);
         setSupportActionBar(toolbar);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -81,7 +86,7 @@ public class MapsActivity2 extends AppCompatActivity implements OnMapReadyCallba
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        if(servicesOK()) {
+        if (servicesOK()) {
             try {
                 LatLng Court_Stevenson = new LatLng(37.781292, -122.186266);
                 LatLng Court_Stevenson2 = new LatLng(37.7814257, -122.1863674);
@@ -89,22 +94,66 @@ public class MapsActivity2 extends AppCompatActivity implements OnMapReadyCallba
                 LatLng WarrenOlney = new LatLng(37.782181, -122.182206);
                 LatLng MillsCollege = new LatLng(37.781004, -122.182827);
 
-                mMap.addMarker(new MarkerOptions().position(Court_Stevenson));
-                mMap.addMarker(new MarkerOptions().position(Court_Stevenson2));
-                mMap.addMarker(new MarkerOptions().position(Underwood_BuildingA));
-                mMap.addMarker(new MarkerOptions().position(WarrenOlney));
+                BitmapDescriptor bdf = BitmapDescriptorFactory.fromResource(R.drawable.bikecon);
+        mMap.addMarker(new MarkerOptions()
+                .position(Court_Stevenson)
+                .icon(bdf)
+        );
+        mMap.addMarker(new MarkerOptions()
+                .position(Court_Stevenson2)
+                .icon(bdf)
+        );
+        mMap.addMarker(new MarkerOptions()
+                .position(Underwood_BuildingA)
+                .icon(bdf)
+        );
+        mMap.addMarker(new MarkerOptions()
+                .position(WarrenOlney)
+                .icon(bdf)
+        );
 
                 float zoomLevel = 15.7f; //This goes up to 21
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(MillsCollege, zoomLevel));
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(MillsCollege, zoomLevel));
+                mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+                    @Override
+                    public View getInfoWindow(Marker marker) {
+                        return null;
+                    }
+
+                    @Override
+                    public View getInfoContents(Marker marker) {
+                        View v = getLayoutInflater().inflate(R.layout.fragment_rack, null);
+                        // Other information to set the data goes here
+                        return v;
+                    }
+                });
+
             } catch (Exception e) {
                 Toast toast = Toast.makeText(this,
-                        "Google Play Services is not avaliable for this device",
+                        "Google Play Services is not installed for this device",
                         Toast.LENGTH_SHORT);
-                toast.show() ;
+                toast.show();
             }
         }
-
     }
+
+    /**
+     * Called when the user clicks a marker.
+     */
+    @Override
+    public boolean onMarkerClick(final Marker marker) {
+
+        // Retrieve the data from the marker.
+        Integer clickCount = (Integer) marker.getTag();
+
+        // Check if a click count was set, then display the click count.
+        if (clickCount != null) {
+            marker.showInfoWindow();
+        }
+        return false;
+    }
+
 
     public boolean servicesOK() {
         GoogleApiAvailability googleApiAvailability = GoogleApiAvailability.getInstance();
@@ -145,6 +194,7 @@ public class MapsActivity2 extends AppCompatActivity implements OnMapReadyCallba
             } else {
                 Log.d("MapsActivity2", "No record was found");
             }
+            cursor.close();
         } catch (SQLiteException e) {
             Toast toast = Toast.makeText(this,
                     "Database unavailable",
