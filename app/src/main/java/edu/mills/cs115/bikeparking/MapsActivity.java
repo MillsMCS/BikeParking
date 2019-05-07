@@ -5,8 +5,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -15,25 +13,30 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 
 /**
  * The top-level activity for Bike Parking. The accompanying view
- * enables users to display {@link MapsActivity2} and {@link RackFragment}.
+ * enables users to display {@link MapsActivity} and {@link RackFragment}.
  */
-public class MapsActivity2 extends AppCompatActivity implements OnMapReadyCallback {
+public class MapsActivity extends AppCompatActivity implements
+        OnMarkerClickListener,
+        OnMapReadyCallback {
 
     private GoogleMap mMap;
     private ShareActionProvider shareActionProvider;
@@ -42,7 +45,7 @@ public class MapsActivity2 extends AppCompatActivity implements OnMapReadyCallba
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps2);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolBar);
+        Toolbar toolbar = findViewById(R.id.toolBar);
         setSupportActionBar(toolbar);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -106,6 +109,35 @@ public class MapsActivity2 extends AppCompatActivity implements OnMapReadyCallba
 
         float zoomLevel = 15.7f; //This goes up to 21
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(MillsCollege, zoomLevel));
+        mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+            @Override
+            public View getInfoWindow(Marker marker) {
+                return null;
+            }
+
+            @Override
+            public View getInfoContents(Marker marker) {
+                View v = getLayoutInflater().inflate(R.layout.fragment_rack, null);
+                // Other information to set the data goes here
+                return v;
+            }
+        });
+    }
+
+    /**
+     * Called when the user clicks a marker.
+     */
+    @Override
+    public boolean onMarkerClick(final Marker marker) {
+
+        // Retrieve the data from the marker.
+        Integer clickCount = (Integer) marker.getTag();
+
+        // Check if a click count was set, then display the click count.
+        if (clickCount != null) {
+            marker.showInfoWindow();
+        }
+        return false;
     }
 
     private void getBikeRack() {
@@ -136,6 +168,7 @@ public class MapsActivity2 extends AppCompatActivity implements OnMapReadyCallba
             } else {
                 Log.d("MapsActivity2", "No record was found");
             }
+            cursor.close();
         } catch (SQLiteException e) {
             Toast toast = Toast.makeText(this,
                     "Database unavailable",

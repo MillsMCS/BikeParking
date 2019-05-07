@@ -23,4 +23,6 @@
     <string name="notes">Notes</string>
     <string name="location_text">near Location</string>
     <string name="rack_button">Create Bike Rack</string>
+    <string name="description_error">Description not found</string>
+    <string name="add_rack">Add bike rack</string>
 </resources>

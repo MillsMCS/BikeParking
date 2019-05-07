@@ -22,9 +22,10 @@
         <meta-data
             android:name="com.google.android.actions"
             android:resource="@menu/menu_main" />
-        <activity android:name=".TestActivity"></activity>
+
+        <activity android:name=".TestActivity" />
         <activity
-            android:name=".MapsActivity2"
+            android:name=".MapsActivity"
             android:label="@string/title_activity_maps2">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
