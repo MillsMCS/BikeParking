@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.ShareActionProvider;
@@ -42,6 +43,9 @@ public class MapsActivity extends AppCompatActivity implements
 
     private GoogleMap mMap;
     private ShareActionProvider shareActionProvider;
+    private Marker currentMarker;
+    private LatLng currentCoords;
+    private Boolean clicked = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +57,10 @@ public class MapsActivity extends AppCompatActivity implements
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-        //getBikeRack();
+        if(savedInstanceState != null){
+            clicked = savedInstanceState.getBoolean("clicked");
+            currentCoords = new LatLng(savedInstanceState.getDouble("lat"), savedInstanceState.getDouble("lng"));
+        }
     }
 
 
@@ -136,6 +143,12 @@ public class MapsActivity extends AppCompatActivity implements
                 toast.show();
             }
         }
+
+        if(currentCoords != null) {
+            currentMarker = mMap.addMarker(new MarkerOptions().position(currentCoords));
+            currentMarker.setVisible(true);
+            currentMarker.showInfoWindow();
+        }
     }
 
     /**
@@ -150,6 +163,8 @@ public class MapsActivity extends AppCompatActivity implements
         // Check if a click count was set, then display the click count.
         if (clickCount != null) {
             marker.showInfoWindow();
+            currentMarker = marker;
+            clicked = true;
         }
         return false;
     }
@@ -201,5 +216,34 @@ public class MapsActivity extends AppCompatActivity implements
                     Toast.LENGTH_SHORT);
             toast.show();*/
         }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        Integer saveMarker = null;
+        LatLng coords = null;
+        if(currentMarker != null) {
+            saveMarker = (Integer) currentMarker.getTag();
+            coords = currentMarker.getPosition();
+        }
+        if(saveMarker != null) {
+            savedInstanceState.putInt("markerTag", saveMarker);
+        }
+        if(coords != null){
+            savedInstanceState.putDouble("lat", coords.latitude);
+            savedInstanceState.putDouble("lng", coords.longitude);
+        }
+        savedInstanceState.putBoolean("clicked", clicked);
+    }
+
+    /*@Override
+    protected void onPause(){
+
+    }*/
+
+    @Override
+    protected void onResume(){
+        super.onResume();
+        Log.d("onResume", "Activity is being resumed");
     }
 }
