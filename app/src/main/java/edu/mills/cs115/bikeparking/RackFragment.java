@@ -56,10 +56,7 @@ public class RackFragment extends Fragment {
                 cursor = db.query("BIKE_RACK",
                         new String[]{"NAME"},
                         null, null, null, null, null);
-                /*
-                SimpleCursorAdapter cursorAdapter = new SimpleCursorAdapter(MapsActivity2.this,
-                        android.R.layout.simple_gallery_item
-                );*/
+
                 return true;
 
             } catch (SQLiteException e) {
