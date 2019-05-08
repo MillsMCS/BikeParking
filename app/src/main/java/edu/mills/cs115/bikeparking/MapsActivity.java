@@ -95,6 +95,7 @@ public class MapsActivity extends AppCompatActivity implements
 
         if (servicesOK()) {
             try {
+                String url = "https://naclo.cs.umass.edu/cgi-bin/bikeparkingserver/get-rack.py";
                 LatLng Court_Stevenson = new LatLng(37.781292, -122.186266);
                 LatLng Court_Stevenson2 = new LatLng(37.7814257, -122.1863674);
                 LatLng Underwood_BuildingA = new LatLng(37.7810884, -122.185789);
@@ -102,22 +103,22 @@ public class MapsActivity extends AppCompatActivity implements
                 LatLng MillsCollege = new LatLng(37.781004, -122.182827);
 
                 BitmapDescriptor bdf = BitmapDescriptorFactory.fromResource(R.drawable.bikecon);
-        mMap.addMarker(new MarkerOptions()
-                .position(Court_Stevenson)
-                .icon(bdf)
-        );
-        mMap.addMarker(new MarkerOptions()
-                .position(Court_Stevenson2)
-                .icon(bdf)
-        );
-        mMap.addMarker(new MarkerOptions()
-                .position(Underwood_BuildingA)
-                .icon(bdf)
-        );
-        mMap.addMarker(new MarkerOptions()
-                .position(WarrenOlney)
-                .icon(bdf)
-        );
+                mMap.addMarker(new MarkerOptions()
+                        .position(Court_Stevenson)
+                        .icon(bdf)
+                );
+                mMap.addMarker(new MarkerOptions()
+                        .position(Court_Stevenson2)
+                        .icon(bdf)
+                );
+                mMap.addMarker(new MarkerOptions()
+                        .position(Underwood_BuildingA)
+                        .icon(bdf)
+                );
+                mMap.addMarker(new MarkerOptions()
+                        .position(WarrenOlney)
+                        .icon(bdf)
+                );
 
                 float zoomLevel = 15.7f; //This goes up to 21
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(MillsCollege, zoomLevel));
