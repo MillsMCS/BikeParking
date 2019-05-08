@@ -32,6 +32,9 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 
 /**
  * The top-level activity for Bike Parking. The accompanying view
@@ -46,6 +49,8 @@ public class MapsActivity extends AppCompatActivity implements
     private Marker currentMarker;
     private LatLng currentCoords;
     private Boolean clicked = false;
+
+    public BitmapDescriptor bdf = BitmapDescriptorFactory.fromResource(R.drawable.bikecon);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,8 +106,9 @@ public class MapsActivity extends AppCompatActivity implements
                 LatLng WarrenOlney = new LatLng(37.782181, -122.182206);
                 LatLng MillsCollege = new LatLng(37.781004, -122.182827);
 
-                BitmapDescriptor bdf = BitmapDescriptorFactory.fromResource(R.drawable.bikecon);
-        mMap.addMarker(new MarkerOptions()
+                //BitmapDescriptor bdf = BitmapDescriptorFactory.fromResource(R.drawable.bikecon);
+        mMap.addMarker(getMarker("NSB"));
+                /*new MarkerOptions()
                 .position(Court_Stevenson)
                 .icon(bdf)
         );
@@ -117,7 +123,7 @@ public class MapsActivity extends AppCompatActivity implements
         mMap.addMarker(new MarkerOptions()
                 .position(WarrenOlney)
                 .icon(bdf)
-        );
+        );//*/
 
                 float zoomLevel = 15.7f; //This goes up to 21
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(MillsCollege, zoomLevel));
@@ -216,6 +222,25 @@ public class MapsActivity extends AppCompatActivity implements
                     Toast.LENGTH_SHORT);
             toast.show();*/
         }
+    }
+
+    public MarkerOptions getMarker(String name) {
+        LatLng coords;
+        MarkerOptions marker = new MarkerOptions();
+
+        JSONObject reader = new JSONObject();
+        try {
+            JSONObject sys = reader.getJSONObject(name);
+            coords = new LatLng(sys.getDouble("latitude"),
+                    sys.getDouble("longitude"));
+            marker = new MarkerOptions().position(coords).icon(bdf);
+        } catch (JSONException e) {
+            Toast toast = Toast.makeText(this,
+                    "Database unavailable",
+                    Toast.LENGTH_SHORT);
+            toast.show();
+        }
+        return marker;
     }
 
     @Override
