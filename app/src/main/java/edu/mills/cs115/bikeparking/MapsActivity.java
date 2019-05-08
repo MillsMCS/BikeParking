@@ -6,7 +6,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.ShareActionProvider;
@@ -38,8 +37,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
  * enables users to display {@link MapsActivity} and {@link RackFragment}.
  */
 public class MapsActivity extends AppCompatActivity implements
-        OnMarkerClickListener,
-        OnMapReadyCallback {
+        OnMarkerClickListener, OnMapReadyCallback {
 
     private GoogleMap mMap;
     private ShareActionProvider shareActionProvider;
@@ -170,7 +168,6 @@ public class MapsActivity extends AppCompatActivity implements
         return false;
     }
 
-
     public boolean servicesOK() {
         GoogleApiAvailability googleApiAvailability = GoogleApiAvailability.getInstance();
         int result = googleApiAvailability.isGooglePlayServicesAvailable(this);
@@ -208,7 +205,7 @@ public class MapsActivity extends AppCompatActivity implements
                 ///
 
             } else {
-                Log.d("MapsActivity2", "No record was found");
+                Log.d("MapsActivity", "No record was found");
             }
             cursor.close();
         } catch (SQLiteException e) {
