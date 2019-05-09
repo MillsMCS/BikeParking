@@ -11,10 +11,12 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.ShareActionProvider;
 import android.support.v7.widget.Toolbar;
+import android.util.JsonReader;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.webkit.HttpAuthHandler;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -32,6 +34,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -50,7 +53,7 @@ public class MapsActivity extends AppCompatActivity implements
     private LatLng currentCoords;
     private Boolean clicked = false;
 
-    public BitmapDescriptor bdf = BitmapDescriptorFactory.fromResource(R.drawable.bikecon);
+    //public BitmapDescriptor bdf = BitmapDescriptorFactory.fromResource(R.drawable.bikecon);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,12 +109,15 @@ public class MapsActivity extends AppCompatActivity implements
                 LatLng WarrenOlney = new LatLng(37.782181, -122.182206);
                 LatLng MillsCollege = new LatLng(37.781004, -122.182827);
 
-                //BitmapDescriptor bdf = BitmapDescriptorFactory.fromResource(R.drawable.bikecon);
-        mMap.addMarker(getMarker("NSB"));
-                /*new MarkerOptions()
-                .position(Court_Stevenson)
+                BitmapDescriptor bdf = BitmapDescriptorFactory.fromResource(R.drawable.bikecon);
+        mMap.addMarker(getMarker("NSB", bdf));/*(new MarkerOptions()
+                ///*
+                .position(getMarker("NSB", bdf))
+                .icon(bdf));
+                /*
+                position(Court_Stevenson)
                 .icon(bdf)
-        );
+        );*/
         mMap.addMarker(new MarkerOptions()
                 .position(Court_Stevenson2)
                 .icon(bdf)
@@ -123,7 +129,8 @@ public class MapsActivity extends AppCompatActivity implements
         mMap.addMarker(new MarkerOptions()
                 .position(WarrenOlney)
                 .icon(bdf)
-        );//*/
+        );
+        //*/
 
                 float zoomLevel = 15.7f; //This goes up to 21
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(MillsCollege, zoomLevel));
@@ -224,16 +231,44 @@ public class MapsActivity extends AppCompatActivity implements
         }
     }
 
-    public MarkerOptions getMarker(String name) {
-        LatLng coords;
+    public MarkerOptions getMarker(String name, BitmapDescriptor markIcon) {
+        Log.d("MapsActivity:", "Starting getMarker");
+        BikeHttpHandler sh = new BikeHttpHandler();
         MarkerOptions marker = new MarkerOptions();
+        //set default coordinates for marker
+        LatLng coords = new LatLng(37.781292,-122.186266);
+        LatLng oldCoords = null;
+        String url = "https://naclo.cs.umass.edu/cgi-bin/bikeparkingserver/get-rack.py?";
+        String locName;
+        JSONArray currIndex;
 
-        JSONObject reader = new JSONObject();
         try {
-            JSONObject sys = reader.getJSONObject(name);
-            coords = new LatLng(sys.getDouble("latitude"),
-                    sys.getDouble("longitude"));
-            marker = new MarkerOptions().position(coords).icon(bdf);
+            Log.d("MapActivity", "Creating reader");
+            JSONObject reader = sh.makeServiceCall(url);
+            Log.d("MapsActivity", "Reader created");
+            JSONArray locations = reader.getJSONArray("data");
+            Log.d("MapsActivity", "Locations gathered");
+            Log.println(1, "MapsActivity:", locations.toString());
+            int c = 0;
+            while(c < locations.length()){
+                currIndex = locations.getJSONArray(0);
+                locName = currIndex.getString(3);
+                if(locName.equals(name)){
+                    oldCoords = coords;
+                    coords = new LatLng(currIndex.getDouble(1),
+                            currIndex.getDouble(2));
+                    Log.d("MapsActivity:", "Coordinates found!");
+                    break;
+                }
+                c++;
+            }
+            marker = new MarkerOptions().position(coords).icon(markIcon).visible(false);
+            if(oldCoords != null){
+               marker.visible(true);
+            } else{
+                Log.d("MapsActivity:",
+                        "Coordinates could not be found.");
+            }
         } catch (JSONException e) {
             Toast toast = Toast.makeText(this,
                     "Database unavailable",
