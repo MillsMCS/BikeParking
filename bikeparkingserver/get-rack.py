@@ -1,9 +1,9 @@
 #!/usr/bin/python3
 
-# Import modules for CGI handling 
-import cgi, cgitb 
-from sqlite3 import connect
+# Import modules for CGI handling
+import cgi
 import json
+from sqlite3 import connect
 
 # Create instance of FieldStorage 
 form = cgi.FieldStorage()
@@ -18,17 +18,24 @@ conn = connect('bikeparking.sqlite')
 c = conn.cursor()
 c.execute("SELECT NAME, latitude, longitude, photo, added_by, notes FROM BIKE_RACK")
 
+bike_racks = {"bike-racks": {}}
 for name, lati, longi, photo, added_by, notes in c.fetchall():
-    data = {"name": name, 
+
+    if latitude == None or longitude == None:
+        bike_racks["bike-racks"][name] = {"name": name, 
                 "latitude": lati,
                 "longitude": longi,
                 "photo_url": photo,
                 "added_by": added_by,
                 "notes": notes}
-    if latitude == None or longitude == None:
-        print (json.dumps(data, sort_keys=True, indent=4))
     else:
-        print (json.dumps(data, sort_keys=True, indent=4))
+        bike_racks["bike-racks"] = {"name": name,
+                                    "latitude": lati,
+                                    "longitude": longi,
+                                    "photo_url": photo,
+                                    "added_by": added_by,
+                                    "notes": notes}
         break
 
+print (json.dumps(bike_racks, sort_keys=True, indent=4))
 conn.close()

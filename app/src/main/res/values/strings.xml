@@ -14,4 +14,6 @@
     <string name="rack_button">Create Bike Rack</string>
     <string name="description_error">Description not found</string>
     <string name="add_rack">Add bike rack</string>
+    <string name="take_photo_error">Failed to take photo</string>
+    <string name="server_url_root">https://naclo.cs.umass.edu/cgi-bin/bikeparkingserver/</string>
 </resources>

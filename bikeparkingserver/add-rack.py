@@ -3,9 +3,11 @@
 # Import modules for CGI handling
 import cgi
 import cgitb
+# noinspection PyUnresolvedReferences
 import os.path
 import time
-from sqlite3 import connect
+# noinspection PyUnresolvedReferences
+from sqlite3 import conn
 
 cgitb.enable()
 
@@ -16,7 +18,8 @@ print ("Content-Type: text/html\n");
 print ("\n");
 
 
-def save_uploaded_pic(form_value, upload_dir, number):
+# noinspection PyUnresolvedReferences,SpellCheckingInspection
+def save_uploaded_pic(form_value, upload_dir):
     """This saves a file uploaded by an HTML form.
        The form_field is the name of the file input field from the form.
        For example, the following form_field would be "file_1":
@@ -28,7 +31,8 @@ def save_uploaded_pic(form_value, upload_dir, number):
     """  # https://stackoverflow.com/questions/12166158/upload-a-file-with-python
     if not form_value: return
     if not form_value.file: return
-    proposed_url = os.path.join(upload_dir, number + form_value.filename)
+    proposed_url = os.path.join(upload_dir, form_value.filename)
+    # noinspection PyUnresolvedReferences
     fout = open(proposed_url, 'wb')
     while 1:
         chunk = form_value.file.read(100000)
@@ -51,17 +55,18 @@ if notes_text == None:
 if notes_text != None:
     notes_status = 1
 
-conn = connect('bikeparking.sqlite')
+conn = conn('bikeparking.sqlite')
 c = conn.cursor()
 
 # find the rack ID out of the existing ones
 
 c.execute("SELECT _id FROM bike_rack ORDER BY _id DESC LIMIT 1;")
 results = c.fetchall()
+# noinspection PyUnresolvedReferences,PyUnresolvedReferences
 rack_id = str(1 + int(results[0][0]))
 
 # Upload the photo and get the url
-photo_url = save_uploaded_pic(photo, "/racks/" + rack_id + "/", 1)
+photo_url = save_uploaded_pic(photo, "/racks/" + rack_id + "/")
 
 # Insert the bike rack
 c.execute("INSERT INTO BIKE_RACK VALUES (null, ?, ?, ?, ?, ?, ?);", \
