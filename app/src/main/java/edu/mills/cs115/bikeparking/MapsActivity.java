@@ -48,7 +48,7 @@ public class MapsActivity extends AppCompatActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_maps2);
+        setContentView(R.layout.activity_maps);
         Toolbar toolbar = findViewById(R.id.toolBar);
         setSupportActionBar(toolbar);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -137,7 +137,7 @@ public class MapsActivity extends AppCompatActivity implements
 
             } catch (Exception e) {
                 Toast toast = Toast.makeText(this,
-                        "Google Play Services is not installed for this device",
+                        this.getString(R.string.google_play_not_installed),
                         Toast.LENGTH_SHORT);
                 toast.show();
             }
@@ -174,7 +174,7 @@ public class MapsActivity extends AppCompatActivity implements
         if (result == ConnectionResult.SUCCESS) {
             return true;
         } else {
-            Toast.makeText(this, "Cannot connect to Google Play services", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, this.getString(R.string.google_play_cannot_connect), Toast.LENGTH_LONG).show();
         }
         return false;
     }
@@ -189,7 +189,7 @@ public class MapsActivity extends AppCompatActivity implements
                     null, null, null, null, null);
             if (cursor.moveToFirst()) {
                 String nameText = cursor.getString(0);
-                Boolean notes = false;
+                boolean notes = false;
                 if (cursor.getInt(1) == 1) {
                     notes = true;
                 }
@@ -218,6 +218,7 @@ public class MapsActivity extends AppCompatActivity implements
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
         Integer saveMarker = null;
         LatLng coords = null;
         if(currentMarker != null) {

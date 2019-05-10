@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -14,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -37,14 +39,14 @@ import static android.app.Activity.RESULT_OK;
  */
 public class NewPhotoFragment extends Fragment {
     private static final int CAMERA_REQUEST = 1888;
-    private static final int UPLOAD_REQUEST = 5555;
-    private static int requestCode;
+    private static final int SELECT_IMAGE = 5871;
     private static Activity activity;
     private static String urlString;
     protected Uri photoURI;
     private View layout;
-    private Toast failureMessage = Toast.makeText(getActivity(), getString(R.string.take_photo_error), Toast.LENGTH_LONG);
-
+    private static boolean imageUploaded = false;
+    private Toast failureMessage;
+    private Toast uploadFailureMessage;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -56,22 +58,33 @@ public class NewPhotoFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == CAMERA_REQUEST && resultCode == RESULT_OK) {
-            String imagePath = photoURI.getPath(); // todo: delete this if we don't need it
+        if (resultCode == RESULT_OK) {
             ImageView imageView = layout.findViewById(R.id.selected_image);
             Bitmap bitmap = null;
-            try {
-                // much thanks to https://stackoverflow.com/questions/3879992/how-to-get-bitmap-from-an-uri
-                bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), photoURI);
-            } catch (IOException e) {
-                failureMessage.show();
+            if (requestCode == CAMERA_REQUEST) {
+                try {
+                    // much thanks to https://stackoverflow.com/questions/3879992/how-to-get-bitmap-from-an-uri
+                    bitmap = MediaStore.Images.Media.getBitmap(activity.getContentResolver(), photoURI);
+                } catch (IOException e) {
+                    failureMessage.show();
+                }
             }
+            if (requestCode == SELECT_IMAGE) {
+                try {
+                    photoURI = data.getData();
+                    bitmap = MediaStore.Images.Media.getBitmap(activity.getContentResolver(), photoURI);
+                } catch (Exception e) {
+                    uploadFailureMessage.show();
+                }
+            }
+            imageUploaded = true;
             imageView.setImageBitmap(bitmap);
-            //new uploadImageTask().execute(""); // TODO: upload the image to server
         } else if (requestCode == CAMERA_REQUEST && resultCode == RESULT_CANCELED) {
             failureMessage.show();
+        } else if (requestCode == SELECT_IMAGE && resultCode == RESULT_CANCELED) {
+            uploadFailureMessage.show();
         } else {
-            // todo
+            Toast.makeText(activity, "Unknown Error", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -82,18 +95,46 @@ public class NewPhotoFragment extends Fragment {
         layout = inflater.inflate(R.layout.fragment_new_photo, container, false);
         activity = getActivity();
         urlString = getString(R.string.server_url_root);
-        Button cameraButton = layout.findViewById(R.id.take_photo);
+        failureMessage = Toast.makeText(activity, getString(R.string.take_photo_error),
+                Toast.LENGTH_LONG);
+        uploadFailureMessage = Toast.makeText(activity, getString(R.string.select_photo_error),
+                Toast.LENGTH_LONG);
+        ImageButton cameraButton = layout.findViewById(R.id.upload_photo);
         cameraButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+                    Intent getIntent = new Intent(Intent.ACTION_GET_CONTENT);
+                    getIntent.setType("image/*");
+
+                    Intent pickIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                    pickIntent.setType("image/*");
+
+                    Intent chooserIntent = Intent.createChooser(getIntent, getString(R.string.insert_photo));
+                    chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[]{pickIntent});
+
+                    startActivityForResult(chooserIntent, SELECT_IMAGE);
+                } else {
+                    Toast.makeText(activity, activity.getString(R.string.select_photo_versionerror),
+                            Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+        ImageButton uploadButton = layout.findViewById(R.id.take_photo);
+        uploadButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 dispatchTakePictureIntent();
             }
         });
-        Button uploadButton = layout.findViewById(R.id.upload_photo);
-        uploadButton.setOnClickListener(new View.OnClickListener() {
+        Button confirmButton = layout.findViewById(R.id.confirm);
+        confirmButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-                startActivityForResult(cameraIntent, CAMERA_REQUEST);
-            } // TODO: UPLOAD PHOTO needs to be done
+                if (imageUploaded) {
+                    new uploadImageTask().execute("");
+                } else {
+                    Toast.makeText(activity, activity.getString(R.string.image_not_uploaded_error),
+                            Toast.LENGTH_SHORT).show();
+                }
+            }
         });
         return layout;
     }
@@ -102,7 +143,7 @@ public class NewPhotoFragment extends Fragment {
         // Create an image file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_";
-        File storageDir = getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File storageDir = activity.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         File image = File.createTempFile(imageFileName,  /* prefix */
                 ".jpg",         /* suffix */
                 storageDir      /* directory */
@@ -116,7 +157,7 @@ public class NewPhotoFragment extends Fragment {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
         // Ensure that there's a camera activity to handle the intent
-        if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+        if (takePictureIntent.resolveActivity(activity.getPackageManager()) != null) {
             // Create the File where the photo should go
             File photoFile = null;
             try {
@@ -126,7 +167,6 @@ public class NewPhotoFragment extends Fragment {
             }
             // Continue only if the File was successfully created
             if (photoFile != null) {
-                Activity activity = this.getActivity();
                 photoURI = FileProvider.getUriForFile(activity,
                         "edu.mills.cs115.bikeparking.fileprovider",
                         photoFile);
@@ -168,5 +208,7 @@ public class NewPhotoFragment extends Fragment {
             }
         }
     }
+
 }
+
 
