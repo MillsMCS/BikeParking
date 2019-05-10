@@ -15,7 +15,7 @@
     <string name="server_url_root">https://naclo.cs.umass.edu/cgi-bin/bikeparkingserver/</string>
     <string name="use_camera">Camera</string>
     <string name="use_gallery">Gallery</string>
-    <string name="select_photo_versionerror">This action requires Android Lollipop or better. Please use the camera instead.</string>
+    <string name="select_photo_versionerror">This action requires a newer version of Android. Please use the camera instead.</string>
     <string name="select_photo_error">Failed to upload photo</string>
     <string name="confirm">Confirm</string>
     <string name="image_not_uploaded_error">Please upload an image first.</string>
