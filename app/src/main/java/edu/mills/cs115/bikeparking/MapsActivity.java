@@ -103,14 +103,20 @@ public class MapsActivity extends AppCompatActivity implements
 
         if (servicesOK()) {
             try {
+                String url = "http://naclo.cs.umass.edu/cgi-bin/bikeparkingserver/get-rack.py?";
                 LatLng Court_Stevenson = new LatLng(37.781292, -122.186266);
                 LatLng Court_Stevenson2 = new LatLng(37.7814257, -122.1863674);
                 LatLng Underwood_BuildingA = new LatLng(37.7810884, -122.185789);
                 LatLng WarrenOlney = new LatLng(37.782181, -122.182206);
                 LatLng MillsCollege = new LatLng(37.781004, -122.182827);
 
+                //Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.buildingloc);
+                BitmapDescriptor test = BitmapDescriptorFactory.defaultMarker(
+                  BitmapDescriptorFactory.HUE_AZURE
+                );
+                        //fromBitmap(bitmap);
                 BitmapDescriptor bdf = BitmapDescriptorFactory.fromResource(R.drawable.bikecon);
-        mMap.addMarker(getMarker("NSB", bdf));/*(new MarkerOptions()
+        mMap.addMarker(getMarker(url, "NSB", test));/*(new MarkerOptions()
                 ///*
                 .position(getMarker("NSB", bdf))
                 .icon(bdf));
@@ -231,49 +237,36 @@ public class MapsActivity extends AppCompatActivity implements
         }
     }
 
-    public MarkerOptions getMarker(String name, BitmapDescriptor markIcon) {
+    public MarkerOptions getMarker(String url, String name, BitmapDescriptor markIcon) {
         Log.d("MapsActivity:", "Starting getMarker");
         BikeHttpHandler sh = new BikeHttpHandler();
         MarkerOptions marker = new MarkerOptions();
         //set default coordinates for marker
-        LatLng coords = new LatLng(37.781292,-122.186266);
+        LatLng coords = new LatLng(37.781317,-122.182900);
         LatLng oldCoords = null;
-        String url = "https://naclo.cs.umass.edu/cgi-bin/bikeparkingserver/get-rack.py?";
         String locName;
         JSONArray currIndex;
 
         try {
-            Log.d("MapActivity", "Creating reader");
-            JSONObject reader = sh.makeServiceCall(url);
-            Log.d("MapsActivity", "Reader created");
-            JSONArray locations = reader.getJSONArray("data");
-            Log.d("MapsActivity", "Locations gathered");
-            Log.println(1, "MapsActivity:", locations.toString());
-            int c = 0;
-            while(c < locations.length()){
-                currIndex = locations.getJSONArray(0);
-                locName = currIndex.getString(3);
-                if(locName.equals(name)){
-                    oldCoords = coords;
-                    coords = new LatLng(currIndex.getDouble(1),
-                            currIndex.getDouble(2));
-                    Log.d("MapsActivity:", "Coordinates found!");
-                    break;
-                }
-                c++;
-            }
-            marker = new MarkerOptions().position(coords).icon(markIcon).visible(false);
-            if(oldCoords != null){
-               marker.visible(true);
+            oldCoords = coords;
+            coords = sh.makeServerArray(url, name);
+            if(coords != null) {
+                marker = new MarkerOptions().position(coords).icon(markIcon).visible(false);
+                marker.visible(true);
             } else{
-                Log.d("MapsActivity:",
+                Log.d("MapsActivity",
                         "Coordinates could not be found.");
             }
-        } catch (JSONException e) {
+        } catch (Exception e) {
             Toast toast = Toast.makeText(this,
                     "Database unavailable",
                     Toast.LENGTH_SHORT);
             toast.show();
+        }
+        if(marker.getPosition() == null){
+            marker.position(oldCoords).icon(markIcon).visible(true);
+            Log.d("MapsActivity",
+                    "Coordinates could not be found.");
         }
         return marker;
     }
