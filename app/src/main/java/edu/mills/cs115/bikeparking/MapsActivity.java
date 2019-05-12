@@ -55,7 +55,7 @@ public class MapsActivity extends AppCompatActivity implements
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-        if(savedInstanceState != null){
+        if (savedInstanceState != null) {
             clicked = savedInstanceState.getBoolean("clicked");
             currentCoords = new LatLng(savedInstanceState.getDouble("lat"), savedInstanceState.getDouble("lng"));
         }
@@ -143,7 +143,7 @@ public class MapsActivity extends AppCompatActivity implements
             }
         }
 
-        if(currentCoords != null) {
+        if (currentCoords != null) {
             currentMarker = mMap.addMarker(new MarkerOptions().position(currentCoords));
             currentMarker.setVisible(true);
             currentMarker.showInfoWindow();
@@ -159,7 +159,7 @@ public class MapsActivity extends AppCompatActivity implements
         // Retrieve the data from the marker.
         Integer clickCount = (Integer) marker.getTag();
 
-        // Check if a click count was set, then display the click count.
+        // Check if a click count was set, then display the info window.
         if (clickCount != null) {
             marker.showInfoWindow();
             currentMarker = marker;
@@ -221,14 +221,14 @@ public class MapsActivity extends AppCompatActivity implements
         super.onSaveInstanceState(savedInstanceState);
         Integer saveMarker = null;
         LatLng coords = null;
-        if(currentMarker != null) {
+        if (currentMarker != null) {
             saveMarker = (Integer) currentMarker.getTag();
             coords = currentMarker.getPosition();
         }
-        if(saveMarker != null) {
+        if (saveMarker != null) {
             savedInstanceState.putInt("markerTag", saveMarker);
         }
-        if(coords != null){
+        if (coords != null) {
             savedInstanceState.putDouble("lat", coords.latitude);
             savedInstanceState.putDouble("lng", coords.longitude);
         }
@@ -241,7 +241,7 @@ public class MapsActivity extends AppCompatActivity implements
     }*/
 
     @Override
-    protected void onResume(){
+    protected void onResume() {
         super.onResume();
         Log.d("onResume", "Activity is being resumed");
     }

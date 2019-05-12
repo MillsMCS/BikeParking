@@ -9,7 +9,7 @@ cgitb.enable()
 # Create instance of FieldStorage
 form = cgi.FieldStorage()
 
-print ("Content-Type: text/html\n");
+print ("Content-Type: text/plain\n");
 print ("\n");
-print ("<h1>This displays the result of what was posted.</h1>")
+print ("This displays the result of what was posted.")
 print(form);

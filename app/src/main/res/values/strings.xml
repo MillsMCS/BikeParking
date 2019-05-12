@@ -12,7 +12,6 @@
     <string name="description_error">Description not found</string>
     <string name="add_rack">Add bike rack</string>
     <string name="take_photo_error">Failed to take photo</string>
-    <string name="server_url_root">https://naclo.cs.umass.edu/cgi-bin/bikeparkingserver/</string>
     <string name="use_camera">Camera</string>
     <string name="use_gallery">Gallery</string>
     <string name="select_photo_versionerror">This action requires a newer version of Android. Please use the camera instead.</string>
@@ -22,4 +21,5 @@
     <string name="google_play_not_installed">Google Play Services is not installed for this device</string>
     <string name="google_play_cannot_connect">Cannot connect to Google Play services</string>
     <string name="selected_image">selected image</string>
+    <string name="error_unknown">Unknown Error</string>
 </resources>
