@@ -22,9 +22,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -32,8 +30,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.net.HttpURLConnection;
+import java.io.PrintWriter;
 import java.net.URL;
+import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -51,9 +50,9 @@ public class NewPhotoFragment extends Fragment {
     private static boolean imageUploaded = false;
     private static Toast uploadFailureMessage;
     private static Bitmap image;
+    private static Toast failureMessage;
     protected Uri photoURI;
     private View layout;
-    private Toast failureMessage;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -180,7 +179,7 @@ public class NewPhotoFragment extends Fragment {
         }
     }
 
-    static class uploadImageTask extends AsyncTask<Bitmap, Void, String> {
+    private static class uploadImageTask extends AsyncTask<Bitmap, Void, String> {
 
         @Override
         protected String doInBackground(Bitmap... params) {
@@ -191,20 +190,32 @@ public class NewPhotoFragment extends Fragment {
             byte[] bitmapArray = baos.toByteArray();
             String data = Base64.encodeToString(bitmapArray, 0);
             try {
-                URL url = new URL("https://naclo.cs.umass.edu/cgi-bin/bikeparkingserver/test.py");
-                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+                String urlString = "https://naclo.cs.umass.edu/cgi-bin/bikeparkingserver/test.py?";
+                URL url = new URL(urlString);
+                String boundary = Long.toHexString(System.currentTimeMillis()); // Just generate some unique random value.
+                String CRLF = "\r\n"; // Line separator required by multipart/form-data.
+                URLConnection urlConnection = url.openConnection();
                 urlConnection.setDoOutput(true);
-                urlConnection.setChunkedStreamingMode(0);
-                // Prepare the data to go out
-                OutputStream out = new BufferedOutputStream(urlConnection.getOutputStream());
-                BufferedWriter w = new BufferedWriter(new OutputStreamWriter(out, StandardCharsets.UTF_8));
-                //Log.d("NewPhotoFragment", data);
-                w.write(data);
-                w.flush();
-                w.close();
-                out.close();
-                baos.close();
+                urlConnection.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
 
+                OutputStream output = urlConnection.getOutputStream();
+                PrintWriter writer = new PrintWriter(new OutputStreamWriter(output, StandardCharsets.UTF_8), true);
+                // Send normal param.
+                writer.append("--" + boundary).append(CRLF);
+                writer.append("Content-Disposition: form-data; name=\"rackid\"").append(CRLF);
+                writer.append("Content-Type: text/plain; charset=" + "UTF-8").append(CRLF);
+                writer.append(CRLF).append("CURRENT MARKER").append(CRLF).flush();
+
+                // Send normal param.
+                writer.append("--" + boundary).append(CRLF);
+                writer.append("Content-Disposition: form-data; name=\"data\"").append(CRLF);
+                writer.append("Content-Type: text/plain; charset=" + "UTF-8").append(CRLF);
+                writer.append(CRLF).append(data).append(CRLF).flush();
+
+                // End of multipart/form-data.
+                writer.append("--" + boundary + "--").append(CRLF).flush();
+
+                // Read the response
                 InputStream responseStream = new BufferedInputStream(urlConnection.getInputStream());
                 BufferedReader responseStreamReader = new BufferedReader(new InputStreamReader(responseStream));
 
@@ -219,7 +230,6 @@ public class NewPhotoFragment extends Fragment {
                 String response = stringBuilder.toString();
                 Log.d("NewPhotoFragment", "Input:" + response);
                 responseStream.close();
-                urlConnection.disconnect();
                 return response;
             } catch (Exception e) {
                 e.printStackTrace();
@@ -232,7 +242,7 @@ public class NewPhotoFragment extends Fragment {
             if (result == null) {
                 uploadFailureMessage.show();
             } else {
-                // TODO: Return to calling activity
+                Toast.makeText(activity, "Successfully uploaded photo", Toast.LENGTH_SHORT).show();
             }
         }
     }

@@ -41,9 +41,10 @@ public class MapsActivity extends AppCompatActivity implements
 
     private GoogleMap mMap;
     private ShareActionProvider shareActionProvider;
-    private Marker currentMarker;
+    static Marker currentMarker;
     private LatLng currentCoords;
     private Boolean clicked = false;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -174,7 +175,8 @@ public class MapsActivity extends AppCompatActivity implements
         if (result == ConnectionResult.SUCCESS) {
             return true;
         } else {
-            Toast.makeText(this, this.getString(R.string.google_play_cannot_connect), Toast.LENGTH_LONG).show();
+            Toast.makeText(this, this.getString(R.string.google_play_cannot_connect),
+                    Toast.LENGTH_LONG).show();
         }
         return false;
     }
