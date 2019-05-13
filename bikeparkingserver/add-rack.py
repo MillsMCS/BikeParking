@@ -58,3 +58,5 @@ if notes_status:
 conn.commit()
 
 conn.close()
+
+print ("OK")

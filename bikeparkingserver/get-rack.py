@@ -25,14 +25,14 @@ for name, lati, longi, photo, added_by, notes in c.fetchall():
         bike_racks[name] = {"name": name,
                 "latitude": lati,
                 "longitude": longi,
-                "photo_url": photo,
+                            "photo": photo,
                 "added_by": added_by,
                 "notes": notes}
     elif str(lati) == str(latitude) and str(longi) == str(longitude):
         bike_racks[name] = {"name": name,
                                     "latitude": lati,
                                     "longitude": longi,
-                                    "photo_url": photo,
+                            "photo": photo,
                                     "added_by": added_by,
                             "notes": notes}
     else:

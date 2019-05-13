@@ -4,15 +4,12 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.FileProvider;
-import android.util.Base64;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,19 +18,8 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.net.URL;
-import java.net.URLConnection;
-import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -102,6 +88,24 @@ public class NewPhotoFragment extends Fragment {
                 Toast.LENGTH_LONG);
         uploadFailureMessage = Toast.makeText(activity, getString(R.string.select_photo_error),
                 Toast.LENGTH_LONG);
+
+        Button confirmButton = layout.findViewById(R.id.confirm_new_photo);
+        // If the add photo was called by a existing bike rack, show the button to confirm
+        if (MapsActivity.currentMarker != null) {
+            confirmButton.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    if (imageUploaded) {
+                        PostDataHelper pdh = new PostDataHelper(activity);
+                        PostDataHelper.runUploadImage(image);
+                    } else {
+                        Toast.makeText(activity, activity.getString(R.string.image_not_uploaded_error),
+                                Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+        } else {
+            confirmButton.setVisibility(View.GONE);
+        }
         ImageButton cameraButton = layout.findViewById(R.id.upload_photo);
         cameraButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -126,17 +130,6 @@ public class NewPhotoFragment extends Fragment {
         uploadButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 dispatchTakePictureIntent();
-            }
-        });
-        Button confirmButton = layout.findViewById(R.id.confirm);
-        confirmButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                if (imageUploaded) {
-                    new uploadImageTask().execute(image);
-                } else {
-                    Toast.makeText(activity, activity.getString(R.string.image_not_uploaded_error),
-                            Toast.LENGTH_SHORT).show();
-                }
             }
         });
         return layout;
@@ -178,74 +171,4 @@ public class NewPhotoFragment extends Fragment {
             }
         }
     }
-
-    private static class uploadImageTask extends AsyncTask<Bitmap, Void, String> {
-
-        @Override
-        protected String doInBackground(Bitmap... params) {
-            // https://stackoverflow.com/questions/2938502/sending-post-data-in-android?noredirect=1&lq=1
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            Bitmap bitmap = params[0];
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
-            byte[] bitmapArray = baos.toByteArray();
-            String data = Base64.encodeToString(bitmapArray, 0);
-            try {
-                String urlString = "https://naclo.cs.umass.edu/cgi-bin/bikeparkingserver/test.py?";
-                URL url = new URL(urlString);
-                String boundary = Long.toHexString(System.currentTimeMillis()); // Just generate some unique random value.
-                String CRLF = "\r\n"; // Line separator required by multipart/form-data.
-                URLConnection urlConnection = url.openConnection();
-                urlConnection.setDoOutput(true);
-                urlConnection.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
-
-                OutputStream output = urlConnection.getOutputStream();
-                PrintWriter writer = new PrintWriter(new OutputStreamWriter(output, StandardCharsets.UTF_8), true);
-                // Send normal param.
-                writer.append("--" + boundary).append(CRLF);
-                writer.append("Content-Disposition: form-data; name=\"rackid\"").append(CRLF);
-                writer.append("Content-Type: text/plain; charset=" + "UTF-8").append(CRLF);
-                writer.append(CRLF).append("CURRENT MARKER").append(CRLF).flush();
-
-                // Send normal param.
-                writer.append("--" + boundary).append(CRLF);
-                writer.append("Content-Disposition: form-data; name=\"data\"").append(CRLF);
-                writer.append("Content-Type: text/plain; charset=" + "UTF-8").append(CRLF);
-                writer.append(CRLF).append(data).append(CRLF).flush();
-
-                // End of multipart/form-data.
-                writer.append("--" + boundary + "--").append(CRLF).flush();
-
-                // Read the response
-                InputStream responseStream = new BufferedInputStream(urlConnection.getInputStream());
-                BufferedReader responseStreamReader = new BufferedReader(new InputStreamReader(responseStream));
-
-                String line;
-                StringBuilder stringBuilder = new StringBuilder();
-
-                while ((line = responseStreamReader.readLine()) != null) {
-                    stringBuilder.append(line).append("\n");
-                }
-                responseStreamReader.close();
-
-                String response = stringBuilder.toString();
-                Log.d("NewPhotoFragment", "Input:" + response);
-                responseStream.close();
-                return response;
-            } catch (Exception e) {
-                e.printStackTrace();
-                return null;
-            }
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            if (result == null) {
-                uploadFailureMessage.show();
-            } else {
-                Toast.makeText(activity, "Successfully uploaded photo", Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
 }
-
-

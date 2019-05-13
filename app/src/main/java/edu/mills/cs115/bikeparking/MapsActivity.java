@@ -1,10 +1,6 @@
 package edu.mills.cs115.bikeparking;
 
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteException;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -14,8 +10,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -39,9 +33,9 @@ import com.google.android.gms.maps.model.MarkerOptions;
 public class MapsActivity extends AppCompatActivity implements
         OnMarkerClickListener, OnMapReadyCallback {
 
+    static Marker currentMarker;
     private GoogleMap mMap;
     private ShareActionProvider shareActionProvider;
-    static Marker currentMarker;
     private LatLng currentCoords;
     private Boolean clicked = false;
 
@@ -62,14 +56,25 @@ public class MapsActivity extends AppCompatActivity implements
         }
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
-        MenuItem menuItem = menu.findItem(R.id.action_share);
-        shareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(menuItem);
+        MenuItem shareMenuItem = menu.findItem(R.id.action_share);
+        shareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(shareMenuItem);
         setShareActionIntent("Here is the closest bike rack to you:");
         return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        if (item.getItemId() == R.id.add_rack) {
+            Intent myIntent = new Intent(MapsActivity.this, AddRackActivity.class);
+            MapsActivity.this.startActivity(myIntent);
+            return true;
+        } else {
+            return super.onOptionsItemSelected(item);
+        }
     }
 
     private void setShareActionIntent(String text) {
@@ -79,15 +84,10 @@ public class MapsActivity extends AppCompatActivity implements
         shareActionProvider.setShareIntent(intent);
     }
 
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
+    // Manipulates the map once available.
+    // This callback is triggered when the map is ready to be used.
+    //This is where we can add markers or lines, add listeners or move the camera. In this case,
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -179,43 +179,6 @@ public class MapsActivity extends AppCompatActivity implements
                     Toast.LENGTH_LONG).show();
         }
         return false;
-    }
-
-    private void getBikeRack() {
-        SQLiteOpenHelper bikeRackDatabaseHelper = new BikeParkingDatabaseHelper(this);
-        try {
-            SQLiteDatabase db = bikeRackDatabaseHelper.getReadableDatabase();
-            Cursor cursor = db.query("BIKE_RACK",
-                    new String[]{"NAME", "NOTES",
-                            "IMAGE_ID"},
-                    null, null, null, null, null);
-            if (cursor.moveToFirst()) {
-                String nameText = cursor.getString(0);
-                boolean notes = false;
-                if (cursor.getInt(1) == 1) {
-                    notes = true;
-                }
-                int photoId = cursor.getInt(2);
-
-                ///*
-                TextView name = findViewById(R.id.name);
-                name.setText(nameText);
-
-                ImageView photo = findViewById(R.id.photo);
-                photo.setImageResource(photoId);
-                photo.setContentDescription(nameText);
-                ///
-
-            } else {
-                Log.d("MapsActivity", "No record was found");
-            }
-            cursor.close();
-        } catch (SQLiteException e) {
-            /*Toast toast = Toast.makeText(this,
-                    "Database unavailable",
-                    Toast.LENGTH_SHORT);
-            toast.show();*/
-        }
     }
 
     @Override
