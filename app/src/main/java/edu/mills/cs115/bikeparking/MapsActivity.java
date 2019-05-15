@@ -33,6 +33,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
 
 /**
  * The top-level activity for Bike Parking. The accompanying view
@@ -44,7 +47,7 @@ public class MapsActivity extends AppCompatActivity implements
 
     private GoogleMap mMap;
     private ShareActionProvider shareActionProvider;
-    private Marker currentMarker;
+    protected static Marker currentMarker;
     private LatLng currentCoords;
     private Boolean clicked = false;
 
@@ -104,7 +107,7 @@ public class MapsActivity extends AppCompatActivity implements
 
         if (servicesOK()) {
             try {
-                String url = "https://naclo.cs.umass.edu/cgi-bin/bikeparkingserver/get-rack.py";
+                URL url = new URL("https://naclo.cs.umass.edu/cgi-bin/bikeparkingserver/get-rack.py");
                 LatLng Court_Stevenson = new LatLng(37.781292, -122.186266);
                 LatLng Court_Stevenson2 = new LatLng(37.7814257, -122.1863674);
                 LatLng Underwood_BuildingA = new LatLng(37.7810884, -122.185789);
@@ -242,19 +245,26 @@ public class MapsActivity extends AppCompatActivity implements
         }
     }*/
 
-    public MarkerOptions getMarker(String url, String name, BitmapDescriptor markIcon) {
+    public MarkerOptions getMarker(URL url, String name, BitmapDescriptor markIcon) {
         Log.d("MapsActivity:", "Starting getMarker");
-        BikeHttpHandler sh = new BikeHttpHandler();
+        URL urlTest;
+        try {
+            urlTest = new URL("http://stackoverflow.com/about");
+            BikeHttpHandler sh = new BikeHttpHandler(url, name);
+        } catch(MalformedURLException e){
+
+        }
         MarkerOptions marker = new MarkerOptions();
         //set default coordinates for marker
         LatLng coords = new LatLng(37.781317,-122.182900);
         LatLng oldCoords = null;
-        String locName;
-        JSONArray currIndex;
+        //String locName;
+        //JSONArray currIndex;
 
         try {
+            //sh.testConnect();
             oldCoords = coords;
-            coords = sh.makeServerArray(url, name);
+            //coords = sh.makeServerArray(url, name);
             if(coords != null) {
                 marker = new MarkerOptions().position(coords).icon(markIcon).visible(false);
                 marker.visible(true);

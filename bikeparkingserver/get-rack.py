@@ -12,6 +12,7 @@ print ("Content-Type: text/plain\n");
 
 latitude = form.getvalue('lat')
 longitude  = form.getvalue('long')
+name = form.getvalue('name')
 
 conn = connect('bikeparking.sqlite')
 c = conn.cursor()
