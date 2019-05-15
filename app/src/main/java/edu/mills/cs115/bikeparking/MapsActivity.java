@@ -1,12 +1,7 @@
 package edu.mills.cs115.bikeparking;
 
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteException;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.ShareActionProvider;
@@ -58,27 +53,38 @@ public class MapsActivity extends AppCompatActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_maps2);
+        setContentView(R.layout.activity_maps);
         Toolbar toolbar = findViewById(R.id.toolBar);
         setSupportActionBar(toolbar);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-        if(savedInstanceState != null){
+        if (savedInstanceState != null) {
             clicked = savedInstanceState.getBoolean("clicked");
             currentCoords = new LatLng(savedInstanceState.getDouble("lat"), savedInstanceState.getDouble("lng"));
         }
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
-        MenuItem menuItem = menu.findItem(R.id.action_share);
-        shareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(menuItem);
+        MenuItem shareMenuItem = menu.findItem(R.id.action_share);
+        shareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(shareMenuItem);
         setShareActionIntent("Here is the closest bike rack to you:");
         return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        if (item.getItemId() == R.id.add_rack) {
+            Intent myIntent = new Intent(MapsActivity.this, AddRackActivity.class);
+            MapsActivity.this.startActivity(myIntent);
+            return true;
+        } else {
+            return super.onOptionsItemSelected(item);
+        }
     }
 
     private void setShareActionIntent(String text) {
@@ -88,22 +94,17 @@ public class MapsActivity extends AppCompatActivity implements
         shareActionProvider.setShareIntent(intent);
     }
 
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
+    // Manipulates the map once available.
+    // This callback is triggered when the map is ready to be used.
+    //This is where we can add markers or lines, add listeners or move the camera. In this case,
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
         if (servicesOK()) {
             try {
-                String url = "http://naclo.cs.umass.edu/cgi-bin/bikeparkingserver/get-rack.py?";
+                String url = "https://naclo.cs.umass.edu/cgi-bin/bikeparkingserver/get-rack.py";
                 LatLng Court_Stevenson = new LatLng(37.781292, -122.186266);
                 LatLng Court_Stevenson2 = new LatLng(37.7814257, -122.1863674);
                 LatLng Underwood_BuildingA = new LatLng(37.7810884, -122.185789);
@@ -124,19 +125,23 @@ public class MapsActivity extends AppCompatActivity implements
                 position(Court_Stevenson)
                 .icon(bdf)
         );*/
-        mMap.addMarker(new MarkerOptions()
-                .position(Court_Stevenson2)
-                .icon(bdf)
-        );
-        mMap.addMarker(new MarkerOptions()
-                .position(Underwood_BuildingA)
-                .icon(bdf)
-        );
-        mMap.addMarker(new MarkerOptions()
-                .position(WarrenOlney)
-                .icon(bdf)
-        );
         //*/
+                mMap.addMarker(new MarkerOptions()
+                        .position(Court_Stevenson)
+                        .icon(bdf)
+                );
+                mMap.addMarker(new MarkerOptions()
+                        .position(Court_Stevenson2)
+                        .icon(bdf)
+                );
+                mMap.addMarker(new MarkerOptions()
+                        .position(Underwood_BuildingA)
+                        .icon(bdf)
+                );
+                mMap.addMarker(new MarkerOptions()
+                        .position(WarrenOlney)
+                        .icon(bdf)
+                );
 
                 float zoomLevel = 15.7f; //This goes up to 21
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(MillsCollege, zoomLevel));
@@ -157,13 +162,13 @@ public class MapsActivity extends AppCompatActivity implements
 
             } catch (Exception e) {
                 Toast toast = Toast.makeText(this,
-                        "Google Play Services is not installed for this device",
+                        this.getString(R.string.google_play_not_installed),
                         Toast.LENGTH_SHORT);
                 toast.show();
             }
         }
 
-        if(currentCoords != null) {
+        if (currentCoords != null) {
             currentMarker = mMap.addMarker(new MarkerOptions().position(currentCoords));
             currentMarker.setVisible(true);
             currentMarker.showInfoWindow();
@@ -179,7 +184,7 @@ public class MapsActivity extends AppCompatActivity implements
         // Retrieve the data from the marker.
         Integer clickCount = (Integer) marker.getTag();
 
-        // Check if a click count was set, then display the click count.
+        // Check if a click count was set, then display the info window.
         if (clickCount != null) {
             marker.showInfoWindow();
             currentMarker = marker;
@@ -188,19 +193,19 @@ public class MapsActivity extends AppCompatActivity implements
         return false;
     }
 
-
     public boolean servicesOK() {
         GoogleApiAvailability googleApiAvailability = GoogleApiAvailability.getInstance();
         int result = googleApiAvailability.isGooglePlayServicesAvailable(this);
         if (result == ConnectionResult.SUCCESS) {
             return true;
         } else {
-            Toast.makeText(this, "Cannot connect to Google Play services", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, this.getString(R.string.google_play_cannot_connect),
+                    Toast.LENGTH_LONG).show();
         }
         return false;
     }
 
-    private void getBikeRack() {
+    /*private void getBikeRack() {
         SQLiteOpenHelper bikeRackDatabaseHelper = new BikeParkingDatabaseHelper(this);
         try {
             SQLiteDatabase db = bikeRackDatabaseHelper.getReadableDatabase();
@@ -233,9 +238,9 @@ public class MapsActivity extends AppCompatActivity implements
             /*Toast toast = Toast.makeText(this,
                     "Database unavailable",
                     Toast.LENGTH_SHORT);
-            toast.show();*/
+            toast.show();/
         }
-    }
+    }*/
 
     public MarkerOptions getMarker(String url, String name, BitmapDescriptor markIcon) {
         Log.d("MapsActivity:", "Starting getMarker");
@@ -273,16 +278,17 @@ public class MapsActivity extends AppCompatActivity implements
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
         Integer saveMarker = null;
         LatLng coords = null;
-        if(currentMarker != null) {
+        if (currentMarker != null) {
             saveMarker = (Integer) currentMarker.getTag();
             coords = currentMarker.getPosition();
         }
-        if(saveMarker != null) {
+        if (saveMarker != null) {
             savedInstanceState.putInt("markerTag", saveMarker);
         }
-        if(coords != null){
+        if (coords != null) {
             savedInstanceState.putDouble("lat", coords.latitude);
             savedInstanceState.putDouble("lng", coords.longitude);
         }
@@ -295,7 +301,7 @@ public class MapsActivity extends AppCompatActivity implements
     }*/
 
     @Override
-    protected void onResume(){
+    protected void onResume() {
         super.onResume();
         Log.d("onResume", "Activity is being resumed");
     }

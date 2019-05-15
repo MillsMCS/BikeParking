@@ -56,26 +56,26 @@ c.execute('CREATE TABLE PHOTO (\
 	RACK_ID INTEGER,\
 	USER_ID INTEGER,\
 	TIME NUMERIC,\
-	PHOTO_URL TEXT,\
+	PHOTO_DATA TEXT,\
 	RATING INTEGER,\
 	FOREIGN KEY (rack_id) REFERENCES BIKE_RACK(_id),\
 	FOREIGN KEY (user_id) REFERENCES USER(_id)\
 );\
 ')
 
-# c.execute("INSERT INTO bike_rack VALUES(null, 'NSB', \
-# 		37.780305, -122.180977, 'example.jpg', '1', '0' )")
-# c.execute("INSERT INTO bike_rack VALUES(null, 'Stevenson 1', \
-# 		37.7814257, -122.1863674, 'example.jpg', '1', '0' )")
+c.execute("INSERT INTO bike_rack VALUES(null, 'NSB', \
+		37.780305, -122.180977, 'example.jpg', '1', '0' )")
+c.execute("INSERT INTO bike_rack VALUES(null, 'Stevenson 1', \
+		37.7814257, -122.1863674, 'example.jpg', '1', '0' )")
 
-# c.execute("INSERT INTO bike_rack VALUES(null, 'Stevenson 2', \
-# 		37.781292', -122.186266, 'example.jpg', '1', '0' )")
+c.execute("INSERT INTO bike_rack VALUES(null, 'Stevenson 2', \
+		37.781292, -122.186266, 'example.jpg', '1', '0' )")
 
-# c.execute("INSERT INTO bike_rack VALUES(null, 'Warren Olney', \
-# 		37.782181', -122.182206, 'example.jpg', '1', '0' )")
+c.execute("INSERT INTO bike_rack VALUES(null, 'Warren Olney', \
+		37.782181, -122.182206, 'example.jpg', '1', '0' )")
 
-# c.execute("INSERT INTO bike_rack VALUES(null, 'Mills', \
-# 		37.781004', -122.182827, 'example.jpg', '1', '0' )")
+c.execute("INSERT INTO bike_rack VALUES(null, 'Mills', \
+		37.781004, -122.182827, 'example.jpg', '1', '0' )")
 
 
 # Committing changes and closing the connection to the database file
