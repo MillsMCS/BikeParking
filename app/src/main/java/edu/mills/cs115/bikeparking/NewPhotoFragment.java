@@ -34,9 +34,7 @@ public class NewPhotoFragment extends Fragment {
     private static final int SELECT_IMAGE = 5871;
     private static Activity activity;
     private static boolean imageUploaded = false;
-    private static Toast uploadFailureMessage;
     private static Bitmap image;
-    private static Toast failureMessage;
     protected Uri photoURI;
     private View layout;
 
@@ -55,7 +53,7 @@ public class NewPhotoFragment extends Fragment {
                     // much thanks to https://stackoverflow.com/questions/3879992/how-to-get-bitmap-from-an-uri
                     image = MediaStore.Images.Media.getBitmap(activity.getContentResolver(), photoURI);
                 } catch (IOException e) {
-                    failureMessage.show();
+                    showToast(R.string.take_photo_error, Toast.LENGTH_LONG);
                 }
             }
             if (requestCode == SELECT_IMAGE) {
@@ -63,18 +61,23 @@ public class NewPhotoFragment extends Fragment {
                     photoURI = data.getData();
                     image = MediaStore.Images.Media.getBitmap(activity.getContentResolver(), photoURI);
                 } catch (IOException e) {
-                    uploadFailureMessage.show();
+                    showToast(R.string.error_unknown, Toast.LENGTH_LONG);
                 }
             }
             imageUploaded = true;
             imageView.setImageBitmap(image);
         } else if (requestCode == CAMERA_REQUEST && resultCode == RESULT_CANCELED) {
-            failureMessage.show();
+            showToast(R.string.take_photo_error, Toast.LENGTH_LONG);
         } else if (requestCode == SELECT_IMAGE && resultCode == RESULT_CANCELED) {
-            uploadFailureMessage.show();
+            showToast(R.string.select_photo_error, Toast.LENGTH_LONG);
         } else {
-            Toast.makeText(activity, this.getString(R.string.error_unknown), Toast.LENGTH_LONG).show();
+            showToast(R.string.error_unknown, Toast.LENGTH_LONG);
         }
+    }
+
+    private void showToast(int stringResource, int length) {
+        Toast toast = Toast.makeText(activity, activity.getString(stringResource), length);
+        toast.show();
     }
 
     @Override
@@ -84,11 +87,6 @@ public class NewPhotoFragment extends Fragment {
         layout = inflater.inflate(R.layout.fragment_new_photo, container, false);
         activity = getActivity();
         image = null;
-        failureMessage = Toast.makeText(activity, getString(R.string.take_photo_error),
-                Toast.LENGTH_LONG);
-        uploadFailureMessage = Toast.makeText(activity, getString(R.string.select_photo_error),
-                Toast.LENGTH_LONG);
-
         Button confirmButton = layout.findViewById(R.id.confirm_new_photo);
         // If the add photo was called by a existing bike rack, show the button to confirm
         if (MapsActivity.currentMarker != null) {
@@ -98,8 +96,7 @@ public class NewPhotoFragment extends Fragment {
                         PostDataHelper pdh = new PostDataHelper(activity);
                         PostDataHelper.runUploadImage(image);
                     } else {
-                        Toast.makeText(activity, activity.getString(R.string.image_not_uploaded_error),
-                                Toast.LENGTH_SHORT).show();
+                        showToast(R.string.image_not_uploaded_error, Toast.LENGTH_SHORT);
                     }
                 }
             });
@@ -121,8 +118,7 @@ public class NewPhotoFragment extends Fragment {
 
                     startActivityForResult(chooserIntent, SELECT_IMAGE);
                 } else {
-                    Toast.makeText(activity, activity.getString(R.string.select_photo_versionerror),
-                            Toast.LENGTH_LONG).show();
+                    showToast(R.string.select_photo_versionerror, Toast.LENGTH_LONG);
                 }
             }
         });
@@ -145,7 +141,7 @@ public class NewPhotoFragment extends Fragment {
                 storageDir      /* directory */
         );
         // Save a file: path for use with ACTION_VIEW intents
-        String currentPhotoPath = image.getAbsolutePath();
+        //String currentPhotoPath = image.getAbsolutePath();
         return image;
     }
 
@@ -159,7 +155,7 @@ public class NewPhotoFragment extends Fragment {
             try {
                 photoFile = createImageFile();
             } catch (IOException ex) {
-                failureMessage.show();
+                showToast(R.string.take_photo_error, Toast.LENGTH_LONG);
             }
             // Continue only if the File was successfully created
             if (photoFile != null) {
