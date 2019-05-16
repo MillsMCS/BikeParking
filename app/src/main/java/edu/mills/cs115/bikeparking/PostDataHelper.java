@@ -87,7 +87,7 @@ class PostDataHelper {
         protected String doInBackground(String... params) {
 
             try {
-                String urlString = URL_ROOT + "add-rack.py?";
+                String urlString = URL_ROOT + "test.py?"; // TODO change to add-rack.py
                 URL url = new URL(urlString);
                 URLConnection urlConnection = url.openConnection();
                 urlConnection.setDoOutput(true);
@@ -127,7 +127,7 @@ class PostDataHelper {
             String data = Base64.encodeToString(bitmapArray, 0);
             try {
                 //TODO: Redirect test.py
-                String urlString = URL_ROOT + "test.py?";
+                String urlString = URL_ROOT + "test.py?"; //TODO change to upload_photo.py
                 URL url = new URL(urlString);
                 URLConnection urlConnection = url.openConnection();
                 urlConnection.setDoOutput(true);

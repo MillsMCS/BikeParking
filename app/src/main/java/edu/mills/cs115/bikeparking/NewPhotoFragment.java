@@ -30,10 +30,10 @@ import static android.app.Activity.RESULT_OK;
  * Enables a user to add a new photo to a bike rack, or upload one if one does not exist.
  */
 public class NewPhotoFragment extends Fragment {
+    static final int IMAGE_NOT_UPLOADED = 0;
     private static final int CAMERA_REQUEST = 1888;
     private static final int SELECT_IMAGE = 5871;
     private static Activity activity;
-    private static boolean imageUploaded = false;
     private static Bitmap image;
     protected Uri photoURI;
     private View layout;
@@ -64,8 +64,8 @@ public class NewPhotoFragment extends Fragment {
                     showToast(R.string.error_unknown, Toast.LENGTH_LONG);
                 }
             }
-            imageUploaded = true;
             imageView.setImageBitmap(image);
+            imageView.setTag(R.id.image_upload_status, RESULT_OK);
         } else if (requestCode == CAMERA_REQUEST && resultCode == RESULT_CANCELED) {
             showToast(R.string.take_photo_error, Toast.LENGTH_LONG);
         } else if (requestCode == SELECT_IMAGE && resultCode == RESULT_CANCELED) {
@@ -92,7 +92,9 @@ public class NewPhotoFragment extends Fragment {
         if (MapsActivity.currentMarker != null) {
             confirmButton.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
-                    if (imageUploaded) {
+                    ImageView imageView = layout.findViewById(R.id.selected_image);
+                    int resultCode = (Integer) imageView.getTag(R.id.image_upload_status);
+                    if (resultCode == RESULT_OK) {
                         PostDataHelper pdh = new PostDataHelper(activity);
                         PostDataHelper.runUploadImage(image);
                     } else {
@@ -128,6 +130,8 @@ public class NewPhotoFragment extends Fragment {
                 dispatchTakePictureIntent();
             }
         });
+        ImageView imageView = layout.findViewById(R.id.selected_image);
+        imageView.setTag(R.id.image_upload_status, IMAGE_NOT_UPLOADED);
         return layout;
     }
 
