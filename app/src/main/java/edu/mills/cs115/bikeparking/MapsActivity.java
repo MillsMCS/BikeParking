@@ -25,19 +25,26 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
+
 /**
  * The top-level activity for Bike Parking. The accompanying view
  * enables users to display {@link MapsActivity} and {@link RackFragment}.
  */
 public class MapsActivity extends AppCompatActivity implements
-        OnMarkerClickListener, OnMapReadyCallback {
+        OnMarkerClickListener,
+        OnMapReadyCallback {
 
-    static Marker currentMarker;
     private GoogleMap mMap;
     private ShareActionProvider shareActionProvider;
+    protected static Marker currentMarker;
     private LatLng currentCoords;
     private Boolean clicked = false;
     private float zoomLevel = 15;
+
+    //public BitmapDescriptor bdf = BitmapDescriptorFactory.fromResource(R.drawable.bikecon);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,14 +107,24 @@ public class MapsActivity extends AppCompatActivity implements
 
         if (servicesOK()) {
             try {
-                String url = "https://naclo.cs.umass.edu/cgi-bin/bikeparkingserver/get-rack.py";
+                URL url = new URL("https://naclo.cs.umass.edu/cgi-bin/bikeparkingserver/get-rack.py");
                 LatLng Court_Stevenson = new LatLng(37.781292, -122.186266);
                 LatLng Court_Stevenson2 = new LatLng(37.7814257, -122.1863674);
                 LatLng Underwood_BuildingA = new LatLng(37.7810884, -122.185789);
                 LatLng WarrenOlney = new LatLng(37.782181, -122.182206);
                 LatLng MillsCollege = new LatLng(37.781004, -122.182827);
 
+                //Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.buildingloc);
+                BitmapDescriptor test = BitmapDescriptorFactory.defaultMarker(
+                  BitmapDescriptorFactory.HUE_AZURE
+                );
+                        //fromBitmap(bitmap);
                 BitmapDescriptor bdf = BitmapDescriptorFactory.fromResource(R.drawable.bikecon);
+                Double testLat = 37.781004;
+                Double testLong = 122.182827;
+
+                //mMap.addMarker(getMarker(url, testLat, testLong, test));
+
                 mMap.addMarker(new MarkerOptions()
                         .position(Court_Stevenson)
                         .icon(bdf)
@@ -125,6 +142,7 @@ public class MapsActivity extends AppCompatActivity implements
                         .icon(bdf)
                 );
 
+                float zoomLevel = 15.7f; //This goes up to 21
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(MillsCollege, zoomLevel));
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(MillsCollege, zoomLevel));
                 mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
@@ -147,28 +165,29 @@ public class MapsActivity extends AppCompatActivity implements
                         Toast.LENGTH_SHORT);
                 toast.show();
             }
+        }
 
         }
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-            @Override
-            /**
-             * Allows the GoogleMaps instance to be manipulated
-             */
-            public void onMapClick(final LatLng currentCoords) {
-                final double finalLongitude = currentCoords.longitude;
-                final double finalLatitude = currentCoords.latitude;
-                if (currentCoords != null) {
-                    Marker currentMarker = mMap.addMarker(new MarkerOptions().position(currentCoords));
-                    Intent edit = new Intent(MapsActivity.this, AddRackActivity.class);
-                    edit.putExtra("longitude", finalLongitude);
-                    edit.putExtra("latitude", finalLatitude);
-                    startActivity(edit);
-                    currentMarker.setVisible(true);
-                    currentMarker.showInfoWindow();
-                }
+        @Override
+        /**
+         * Allows the GoogleMaps instance to be manipulated
+         */
+        public void onMapClick(final LatLng currentCoords) {
+            final double finalLongitude = currentCoords.longitude;
+            final double finalLatitude = currentCoords.latitude;
+            if (currentCoords != null) {
+                Marker currentMarker = mMap.addMarker(new MarkerOptions().position(currentCoords));
+                Intent edit = new Intent(MapsActivity.this, AddRackActivity.class);
+                edit.putExtra("longitude", finalLongitude);
+                edit.putExtra("latitude", finalLatitude);
+                startActivity(edit);
+                currentMarker.setVisible(true);
+                currentMarker.showInfoWindow();
             }
-        });
-    }
+        }
+    });
+}
 
 
     /**
@@ -187,6 +206,50 @@ public class MapsActivity extends AppCompatActivity implements
             clicked = true;
         }
         return false;
+    }
+
+
+
+    public MarkerOptions getMarker(URL url, Double lat, Double lng, BitmapDescriptor markIcon) {
+        Log.d("MapsActivity:", "Starting getMarker");
+        URL urlTest;
+        BikeHttpHandler sh = null;
+        try {
+            urlTest = new URL("http://stackoverflow.com/about");
+            sh = new BikeHttpHandler(url, lat,lng);
+        } catch(MalformedURLException e){
+
+        }
+        MarkerOptions marker = new MarkerOptions();
+        //set default coordinates for marker
+        LatLng coords = new LatLng(37.781317,-122.182900);
+        LatLng oldCoords = null;
+
+        try {
+            //sh.testConnect();
+            oldCoords = coords;
+            if(sh != null) {
+                coords = sh.finalCoords;
+            }
+            if(coords != null) {
+                marker = new MarkerOptions().position(coords).icon(markIcon).visible(false);
+                marker.visible(true);
+            } else{
+                Log.d("MapsActivity",
+                        "Coordinates could not be found.");
+            }
+        } catch (Exception e) {
+            Toast toast = Toast.makeText(this,
+                    "Database unavailable",
+                    Toast.LENGTH_SHORT);
+            toast.show();
+        }
+        if(marker.getPosition() == null){
+            marker.position(oldCoords).icon(markIcon).visible(false);
+            Log.d("MapsActivity",
+                    "Coordinates could not be found.");
+        }
+        return marker;
     }
 
     /**
