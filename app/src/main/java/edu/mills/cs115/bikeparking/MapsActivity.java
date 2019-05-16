@@ -56,9 +56,6 @@ public class MapsActivity extends AppCompatActivity implements
     }
 
     @Override
-    /**
-     * Creates and inflates the toolbar.
-     */
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
         MenuItem shareMenuItem = menu.findItem(R.id.action_share);
@@ -68,9 +65,6 @@ public class MapsActivity extends AppCompatActivity implements
     }
 
     @Override
-    /**
-     * Called when the user clicks on toolbar items.
-     */
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
         if (item.getItemId() == R.id.add_rack) {
@@ -89,11 +83,6 @@ public class MapsActivity extends AppCompatActivity implements
         shareActionProvider.setShareIntent(intent);
     }//setShareActionIntent
 
-    /**
-     *Sets up the initial googleMaps instance view.
-     *
-     * @param googleMap, the googleMap instance that is displayed
-     */
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -151,9 +140,6 @@ public class MapsActivity extends AppCompatActivity implements
         }
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
-            /**
-             * Allows the GoogleMaps instance to be manipulated
-             */
             public void onMapClick(final LatLng currentCoords) {
                 final double finalLongitude = currentCoords.longitude;
                 final double finalLatitude = currentCoords.latitude;
@@ -170,10 +156,6 @@ public class MapsActivity extends AppCompatActivity implements
         });
     }
 
-
-    /**
-     * Called when the user clicks a marker.
-     */
     @Override
     public boolean onMarkerClick(final Marker marker) {
 
@@ -206,11 +188,6 @@ public class MapsActivity extends AppCompatActivity implements
         return false;
     }//ServicesOk
 
-    /**
-     * Saves the activity state of the app.
-     *
-     * @param savedInstanceState, the bundle that saved the activity state
-     */
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
