@@ -31,7 +31,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
  */
 public class MapsActivity extends AppCompatActivity implements
         OnMarkerClickListener, OnMapReadyCallback {
-    
+
     static Marker currentMarker;
     private GoogleMap mMap;
     private ShareActionProvider shareActionProvider;
@@ -155,11 +155,14 @@ public class MapsActivity extends AppCompatActivity implements
              * Allows the GoogleMaps instance to be manipulated
              */
             public void onMapClick(final LatLng currentCoords) {
-
+                final double finalLongitude = currentCoords.longitude;
+                final double finalLatitude = currentCoords.latitude;
                 if (currentCoords != null) {
+                    Marker currentMarker = mMap.addMarker(new MarkerOptions().position(currentCoords));
                     Intent edit = new Intent(MapsActivity.this, AddRackActivity.class);
-                    edit.putExtra("latLang", currentCoords);
-                    currentMarker = mMap.addMarker(new MarkerOptions().position(currentCoords));
+                    edit.putExtra("longitude", finalLongitude);
+                    edit.putExtra("latitude", finalLatitude);
+                    startActivity(edit);
                     currentMarker.setVisible(true);
                     currentMarker.showInfoWindow();
                 }
