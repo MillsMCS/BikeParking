@@ -1,5 +1,6 @@
 package edu.mills.cs115.bikeparking;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -8,6 +9,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
+
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 /**
  * Enables a user to add a new bike rack to the app's database.
@@ -21,16 +26,21 @@ public class AddRackActivity extends AppCompatActivity {
         final ImageView imageView = findViewById(R.id.selected_image);
         imageView.setTag(R.id.image_upload_status, 0);
         Button addButton = this.findViewById(R.id.confirm_add_rack);
+        Bundle bundle = getIntent().getExtras();
+        final double lat = bundle.getDouble("latitude");
+        final double lng = bundle.getDouble("longitude");
+        EditText getLatitude = findViewById(R.id.latitude);
+        final String latiValue = String.valueOf(lat);
+        getLatitude.setText(latiValue);
+        EditText getLongitude = findViewById(R.id.longitude);
+        final String longiValue = String.valueOf(lng);
+        getLongitude.setText(longiValue);
+
 
         addButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 String message = "";
 
-                EditText getLatitude = findViewById(R.id.latitude);
-                String latiValue = getLatitude.getText().toString().trim();
-
-                EditText getLongitude = findViewById(R.id.longitude);
-                String longiValue = getLatitude.getText().toString().trim();
                 if (longiValue == "" || latiValue == "") {
                     message = "Latitude or longitude not selected.";
                     Toast.makeText(AddRackActivity.this, message, Toast.LENGTH_SHORT).show();
