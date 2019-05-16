@@ -30,4 +30,5 @@
     <string name="use_camera">Camera</string>
     <string name="use_gallery">Gallery</string>
     <string name="name_bike_rack">Name of bike rack</string>
+    <string name="share_action_text">Here is the closest bike rack to you: </string>>
 </resources>

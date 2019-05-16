@@ -25,20 +25,19 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-
 /**
  * The top-level activity for Bike Parking. The accompanying view
  * enables users to display {@link MapsActivity} and {@link RackFragment}.
  */
 public class MapsActivity extends AppCompatActivity implements
         OnMarkerClickListener, OnMapReadyCallback {
-
+    
     static Marker currentMarker;
     private GoogleMap mMap;
     private ShareActionProvider shareActionProvider;
     private LatLng currentCoords;
     private Boolean clicked = false;
-
+    private float zoomLevel = 15;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,15 +56,21 @@ public class MapsActivity extends AppCompatActivity implements
     }
 
     @Override
+    /**
+     * Creates and inflates the toolbar.
+     */
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
         MenuItem shareMenuItem = menu.findItem(R.id.action_share);
         shareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(shareMenuItem);
-        setShareActionIntent("Here is the closest bike rack to you:");
+        setShareActionIntent("@string/share_action_text");
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
+    /**
+     * Called when the user clicks on toolbar items.
+     */
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
         if (item.getItemId() == R.id.add_rack) {
@@ -82,12 +87,13 @@ public class MapsActivity extends AppCompatActivity implements
         intent.setType("text/plain");
         intent.putExtra(Intent.EXTRA_TEXT, text);
         shareActionProvider.setShareIntent(intent);
-    }
+    }//setShareActionIntent
 
-    // Manipulates the map once available.
-    // This callback is triggered when the map is ready to be used.
-    //This is where we can add markers or lines, add listeners or move the camera. In this case,
-
+    /**
+     *Sets up the initial googleMaps instance view.
+     *
+     * @param googleMap, the googleMap instance that is displayed
+     */
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -119,7 +125,6 @@ public class MapsActivity extends AppCompatActivity implements
                         .icon(bdf)
                 );
 
-                float zoomLevel = 15.7f; //This goes up to 21
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(MillsCollege, zoomLevel));
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(MillsCollege, zoomLevel));
                 mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
@@ -142,14 +147,26 @@ public class MapsActivity extends AppCompatActivity implements
                         Toast.LENGTH_SHORT);
                 toast.show();
             }
-        }
 
-        if (currentCoords != null) {
-            currentMarker = mMap.addMarker(new MarkerOptions().position(currentCoords));
-            currentMarker.setVisible(true);
-            currentMarker.showInfoWindow();
         }
+        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+            @Override
+            /**
+             * Allows the GoogleMaps instance to be manipulated
+             */
+            public void onMapClick(final LatLng currentCoords) {
+
+                if (currentCoords != null) {
+                    Intent edit = new Intent(MapsActivity.this, AddRackActivity.class);
+                    edit.putExtra("latLang", currentCoords);
+                    currentMarker = mMap.addMarker(new MarkerOptions().position(currentCoords));
+                    currentMarker.setVisible(true);
+                    currentMarker.showInfoWindow();
+                }
+            }
+        });
     }
+
 
     /**
      * Called when the user clicks a marker.
@@ -169,6 +186,11 @@ public class MapsActivity extends AppCompatActivity implements
         return false;
     }
 
+    /**
+     * Checks to see if the users device has GooglePlayServices installed.
+     *
+     * @return true if device contains googlePlayServices, otherwise false
+     */
     public boolean servicesOK() {
         GoogleApiAvailability googleApiAvailability = GoogleApiAvailability.getInstance();
         int result = googleApiAvailability.isGooglePlayServicesAvailable(this);
@@ -179,8 +201,13 @@ public class MapsActivity extends AppCompatActivity implements
                     Toast.LENGTH_LONG).show();
         }
         return false;
-    }
+    }//ServicesOk
 
+    /**
+     * Saves the activity state of the app.
+     *
+     * @param savedInstanceState, the bundle that saved the activity state
+     */
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
@@ -199,11 +226,6 @@ public class MapsActivity extends AppCompatActivity implements
         }
         savedInstanceState.putBoolean("clicked", clicked);
     }
-
-    /*@Override
-    protected void onPause(){
-
-    }*/
 
     @Override
     protected void onResume() {
