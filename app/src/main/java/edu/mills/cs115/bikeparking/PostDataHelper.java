@@ -24,7 +24,7 @@ import java.nio.charset.StandardCharsets;
  * Sends data to the server. Uploads images, adds bike racks.
  */
 class PostDataHelper {
-    private static final String urlRoot = "https://naclo.cs.umass.edu/cgi-bin/bikeparkingserver/";
+    private static final String URL_ROOT = "https://naclo.cs.umass.edu/cgi-bin/bikeparkingserver/";
     private static final String CRLF = "\r\n"; // Line separator required by multipart/form-data.
     private static Activity activity;
     private static String boundary;
@@ -44,52 +44,50 @@ class PostDataHelper {
 
     }
 
-    private static void addOneStringParam(PrintWriter writer, String paramName, String data) {
+    private static void addStringParams(PrintWriter writer, String[] label, String[] data) {
         // Send normal param of strings only.
-        writer.append("--" + boundary).append(CRLF);
-        writer.append("Content-Disposition: form-data; name=\"" +
-                paramName + "\"").append(CRLF);
-        writer.append("Content-Type: text/plain; charset=" + "UTF-8").append(CRLF);
-        writer.append(CRLF).append(data).append(CRLF).flush();
+        for (int i = 0; i < label.length; i++) {
+            writer.append(String.format("--%s%sContent-Disposition: form-data; name=\"%s\"%s" +
+                            "Content-Type: text/plain; charset=UTF-8%s%s%s%s",
+                    boundary, CRLF, label[i], CRLF, CRLF, CRLF, data[i], CRLF));
+        }
+        writer.flush();
     }
 
     private static String getResponseText(URLConnection connection) throws IOException {
-        try {
-            InputStream responseStream = new BufferedInputStream(connection.getInputStream());
-            BufferedReader reader = new BufferedReader(new InputStreamReader(responseStream));
+        InputStream responseStream = new BufferedInputStream(connection.getInputStream());
+        BufferedReader reader = new BufferedReader(new InputStreamReader(responseStream));
 
-            String line;
-            StringBuilder stringBuilder = new StringBuilder();
+        String line;
+        StringBuilder stringBuilder = new StringBuilder();
 
-            while ((line = reader.readLine()) != null) {
-                stringBuilder.append(line).append("\n");
-            }
-            reader.close();
-
-            String response = stringBuilder.toString();
-            Log.d("PostDataHelper", "Input:" + response);
-            reader.close();
-
-            responseStream.close();
-            return response;
-        } catch (IOException e) {
-            throw e;
+        while ((line = reader.readLine()) != null) {
+            stringBuilder.append(line).append("\n");
         }
 
+        String response = stringBuilder.toString();
+        Log.d("PostDataHelper", "Input:" + response);
+        reader.close();
+
+        responseStream.close();
+        return response;
+    }
+
+    private static void displayResultToast(String result, int successMessage, int failureMessage) {
+        if (result == null) {
+            Toast.makeText(activity, activity.getString(successMessage), Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(activity, activity.getString(failureMessage), Toast.LENGTH_SHORT).show();
+        }
     }
 
     private static class addBikeRackTask extends AsyncTask<String, Void, String> {
         @Override
         // THE STRINGS HAVE TO BE IN THE CORRECT ORDER in the array
         protected String doInBackground(String... params) {
-            String name = params[0];
-            String latitude = params[1];
-            String longitude = params[2];
-            String user = params[3];
-            String notes_text = params[4];
 
             try {
-                String urlString = urlRoot + "add-rack.py?";
+                String urlString = URL_ROOT + "test.py?"; // TODO change to add-rack.py
                 URL url = new URL(urlString);
                 URLConnection urlConnection = url.openConnection();
                 urlConnection.setDoOutput(true);
@@ -98,11 +96,8 @@ class PostDataHelper {
                 OutputStream output = urlConnection.getOutputStream();
                 PrintWriter writer = new PrintWriter(new OutputStreamWriter(output, StandardCharsets.UTF_8), true);
 
-                addOneStringParam(writer, "name", name);
-                addOneStringParam(writer, "lat", latitude);
-                addOneStringParam(writer, "long", longitude);
-                addOneStringParam(writer, "added-by", user);
-                addOneStringParam(writer, "notes", notes_text);
+                String[] labels = {"name", "lat", "long", "added-by", "notes"};
+                addStringParams(writer, labels, params);
 
                 // End of multipart/form-data.
                 writer.append("--" + boundary + "--").append(CRLF).flush();
@@ -116,14 +111,7 @@ class PostDataHelper {
 
         @Override
         protected void onPostExecute(String result) {
-            if (result == null) {
-                Toast uploadFailureMessage = Toast.makeText(activity,
-                        activity.getString(R.string.add_rack_error), Toast.LENGTH_LONG);
-                uploadFailureMessage.show();
-            } else {
-                Toast.makeText(activity, activity.getString(R.string.success_add_rack),
-                        Toast.LENGTH_SHORT).show();
-            }
+            displayResultToast(result, R.string.add_rack_error, R.string.success_add_rack);
         }
     }
 
@@ -139,7 +127,7 @@ class PostDataHelper {
             String data = Base64.encodeToString(bitmapArray, 0);
             try {
                 //TODO: Redirect test.py
-                String urlString = urlRoot + "test.py?";
+                String urlString = URL_ROOT + "test.py?"; //TODO change to upload_photo.py
                 URL url = new URL(urlString);
                 URLConnection urlConnection = url.openConnection();
                 urlConnection.setDoOutput(true);
@@ -148,11 +136,12 @@ class PostDataHelper {
                 OutputStream output = urlConnection.getOutputStream();
                 PrintWriter writer = new PrintWriter(new OutputStreamWriter(output, StandardCharsets.UTF_8), true);
 
-                addOneStringParam(writer, "rackid", "data tbd!!! TODO");
-                addOneStringParam(writer, "data", data);
+                String[] labels = {"rackid", "data"};
+                String[] fields = {"RACK ID NEEDED", data};
+                addStringParams(writer, labels, fields);
 
                 // End of multipart/form-data.
-                writer.append("--" + boundary + "--").append(CRLF).flush();
+                writer.append(String.format("--%s--%s", boundary, CRLF)).flush();
 
                 // Read the response
                 return getResponseText(urlConnection);
@@ -164,13 +153,7 @@ class PostDataHelper {
 
         @Override
         protected void onPostExecute(String result) {
-            if (result == null) {
-                Toast uploadFailureMessage = Toast.makeText(activity, activity.getString(R.string.select_photo_error),
-                        Toast.LENGTH_LONG);
-                uploadFailureMessage.show();
-            } else {
-                Toast.makeText(activity, activity.getString(R.string.success_upload_photo), Toast.LENGTH_SHORT).show();
-            }
+            displayResultToast(result, R.string.select_photo_error, R.string.success_upload_photo);
         }
     }
 }

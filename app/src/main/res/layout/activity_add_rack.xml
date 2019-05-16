@@ -43,6 +43,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
+                android:id="@+id/name_bike_rack"
                 android:text="@string/name_bike_rack" />
 
             <LinearLayout
@@ -56,9 +57,9 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:ems="10"
-                    android:hint="@string/latitude"
+
                     android:inputType="numberDecimal"
-                    android:text="@string/latitude" />
+                     />
 
                 <EditText
                     android:id="@+id/longitude"
@@ -66,9 +67,9 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:ems="10"
-                    android:hint="@string/longitude"
+
                     android:inputType="numberDecimal"
-                    android:text="@string/longitude" />
+                     />
             </LinearLayout>
 
             <EditText

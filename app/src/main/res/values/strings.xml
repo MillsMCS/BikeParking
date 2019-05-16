@@ -13,9 +13,7 @@
     <string name="image_capture">Take photo</string>
     <string name="image_not_uploaded_error">Please upload an image first.</string>
     <string name="insert_photo">Upload photo</string>
-    <string name="latitude">Latitude</string>
     <string name="location_text">near Location</string>
-    <string name="longitude">Longitude</string>
     <string name="new_note">Add notes about this bike rack</string>
     <string name="notes">Notes</string>
     <string name="rack_button">Create Bike Rack</string>
@@ -30,4 +28,5 @@
     <string name="use_camera">Camera</string>
     <string name="use_gallery">Gallery</string>
     <string name="name_bike_rack">Name of bike rack</string>
+    <string name="share_action_text">Here is the closest bike rack to you: </string>>
 </resources>
